@@ -1,41 +1,30 @@
-FROM ocaml/opam2:4.08
+FROM ocaml/opam:debian-11-ocaml-4.14 as opam
+RUN opam-2.1 pin add -n odoc --dev
+RUN opam-2.1 install --confirm-level=unsafe-yes dune ocaml-lsp-server opam-monorepo ocamlformat.0.24.1 dune-release odoc mdx
+# Use the [Choice] comment to indicate option arguments that should appear in VS Code UX. Use a comma separated list.
+#
+# [Choice] Debian OS version: bullseye
+FROM buildpack-deps:bullseye-curl
+# Use the [Option] comment to specify true/false arguments that should appear in VS Code UX
+#
+# [Option] Install zsh
+ARG INSTALL_ZSH="true"
+# [Option] Upgrade OS packages to their latest versions
+ARG UPGRADE_PACKAGES="false"
 
-# Avoid warnings by switching to noninteractive
-ENV DEBIAN_FRONTEND=noninteractive
-
+# Install needed packages and setup non-root user. Use a separate RUN statement to add your own dependencies.
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
-
-USER root
-
-# hadolint ignore=DL3008
-RUN apt-get update \
-  && apt-get -y install --no-install-recommends m4 \
-  #
-  # Clean up
-  && apt-get autoremove -y \
-  && apt-get clean -y \
-  && rm -rf /var/lib/apt/lists/*
-
-# [Optional] Update UID/GID if needed
-RUN if [ "$USER_GID" != "1000" ] || [ "$USER_UID" != "1000" ]; then \
-    groupmod --gid $USER_GID $USERNAME \
-    && usermod --uid $USER_UID --gid $USER_GID $USERNAME \
-    && chown -R $USER_UID:$USER_GID /home/$USERNAME; \
-  fi
-
-USER opam
-
-# Install Opam packages
-RUN opam update && \
-  opam install \
-  base core_kernel \
-  ounit qcheck dune \
-  ocamlformat
-
-# Switch back to dialog for any ad-hoc use of apt-get
-ENV DEBIAN_FRONTEND=dialog
-
-# Add opam binaries to PATH.
-ENV PATH=/home/opam/.opam/4.08/bin:$PATH
+COPY library-scripts/*.sh library-scripts/*.env /tmp/library-scripts/
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && /bin/bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "true" "true"\
+    && apt-get -y install build-essential curl \
+    && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
+RUN cd /root && curl -OL https://github.com/ocaml/ocaml/archive/refs/tags/4.14.0.tar.gz && tar -xf 4.14.0.tar.gz && cd ocaml-4.14.0 && ./configure --prefix=/usr && make -j world.opt && make install && cd / && rm -f /root/4.14.0.tar.gz && rm -rf /root/ocaml-4.14.0
+COPY --from=opam /usr/bin/opam-2.1 /usr/bin/opam
+COPY --from=opam /home/opam/.opam/4.14/bin/dune /usr/bin/dune
+COPY --from=opam /home/opam/.opam/4.14/bin/ocamllsp /usr/bin/ocamllsp
+COPY --from=opam /home/opam/.opam/4.14/bin/opam-monorepo /usr/bin/opam-monorepo
+COPY --from=opam /home/opam/.opam/4.14/bin/odoc /usr/bin/odoc
+COPY --from=opam /home/opam/.opam/4.14/bin/ocaml-mdx /usr/bin/ocaml-mdx
