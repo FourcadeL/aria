@@ -1,29 +1,39 @@
+SRCDIR := sources
+
+PARSERSOURCES = $(shell find $(SRCDIR) -name "*.mly")
+LEXERSOURCES = $(shell find $(SRCDIR) -name "*.mll")
+CAMLSOURCES = $(shell find $(SRCDIR) -name "*.ml")
+CAMLINTERFACES = $(shell find $(SRCDIR) -name "*.mli")
+
+
+
 all: usage
 
-%.cmi: %.mli
+$(SRCDIR)/%.cmi: $(SRCDIR)/%.mli
 	ocamlc -c $<
 
-%.cmo: %.ml
+$(SRCDIR)/%.cmo: $(SRCDIR)/%.ml
 	ocamlc -c $<
 
-parser.ml: parser.mly
+$(SRCDIR)/parser.ml: $(SRCDIR)/parser.mly
 	ocamlyacc -v $<
 
-lexer.ml: lexer.mll
+$(SRCDIR)/lexer.ml: $(SRCDIR)/lexer.mll
 	ocamllex $<
 
-audio.cmo: audio.cmi audio.ml
+$(SRCDIR)/audio.cmo: $(SRCDIR)/audio.cmi $(SRCDIR)/audio.ml
 
-parser.cmo: audio.cmi parser.cmi
+$(SRCDIR)/parser.cmo: $(SRCDIR)/audio.cmi $(SRCDIR)/parser.cmi
 
-parser.cmi: parser.mli audio.cmo
+$(SRCDIR)/parser.cmi: $(SRCDIR)/parser.mli $(SRCDIR)/audio.cmo
 	ocamlc -c $<
 
-test_parser.cmo : parser.cmi lexer.cmo
+$(SRCDIR)/test_parser.cmo : $(SRCDIR)/parser.cmi $(SRCDIR)/lexer.cmo
 
-test_parser: audio.cmo parser.cmo lexer.cmo test_parser.cmo
+test_parser: $(SRCDIR)/audio.cmo $(SRCDIR)/parser.cmo $(SRCDIR)/lexer.cmo $(SRCDIR)/test_parser.cmo
 	ocamlc -o $@ $^
 
+test_parser: $(BUILDDIR)/test_parser
 
 clean:
 	-rm lexer.ml parser.ml parser.mli *.cmo *.cmi test_parser parser.output
@@ -31,4 +41,4 @@ clean:
 
 
 usage:
-	@echo "make for tool compiling"
+	@echo "make \"test_parser\" for tool compiling"
