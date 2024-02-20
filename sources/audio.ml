@@ -1,3 +1,7 @@
+(*identifier used for block and instrument declaration*)
+type identifier =
+|Id of string
+
 (*octave type - denote an octave number*)
 type octave =
 |Oct of int
@@ -5,16 +9,16 @@ type octave =
 (*baseNote type - denote a note*)
 type baseNote =
 |C
-|C#
+|Cd
 |D
-|D#
+|Dd
 |E
 |F
-|F#
+|Fd
 |G
-|G#
+|Gd
 |A
-|A#
+|Ad
 |B
 
 (*not type - the full note characterisation*)
@@ -23,22 +27,39 @@ type note =
 
 (*------------- Instrument type ---------------*)
 type instrument =
-Instrument of (int * int * int * int)
+|Instrument of (identifier * int * int * int * int)
 
 (*------------- Song and instructions type ---------------*)
-type song =
-Song of (Channel * Channel * Channel * Channel)
-
-type channel =
-Channel of (instruction list)
-
 type instruction =
 |PlayNote of note
 |PlayEmpty
-| %TODO
+|Wait of int
+|RepeatCounterSet of int
+|CallBlock of identifier
+|JumpBlock of identifier
+|ResetStack
+|EndBlock
+|ConditionnalReturnTrack
+|ReturnTrack
+|ConditionnalGlobalReturnTrack
+|GlobalReturnTrack
+|SetReturnTrack
+|SetEndState
+
+type channel =
+|Channel of identifier
+
+type block =
+|Block of (identifier * (instruction list))
+
+type song =
+|Song of ((block list) * channel * channel * channel * channel)
+
+
+
 
 
 
 (*------------- Audio type ---------------*)
 type audio =
-Audio of instrument list * song list
+Audio of (instrument list) * (song list)
