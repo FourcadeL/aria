@@ -8,3 +8,6 @@ lexer.ml
 # ignoring compilation files
 *.cmi
 *.cmo
+
+# ignoring binary files
+*/test_parser
