@@ -9,9 +9,10 @@ open Audio
 
 %token INSTRUMENT
 
+%token SONG
 %token BLOCK
+%token CHANNEL1 CHANNEL2 CHANNEL3 CHANNEL4
 
-%token SONG CHANNEL1 CHANNEL2 CHANNEL3 CHANNEL4
 
 // 1 argument instructions
 %token PLAYNOTE, WAIT, REPEATCOUNTERSET, CALLBLOCK, JUMPBLOCK
@@ -25,7 +26,6 @@ CONDITIONNALGLOBALRETURNTRACK, GLOBALRETURNTRACK, SETRETURNTRACK, SETENDSTATE
 
 %token <string> IDENTIFIER
 %token <int> INT
-%token <int> OCTAVE
 // %token <Audio.note> NOTE
 
 %start start
@@ -55,11 +55,11 @@ instrument_list:
 instruction:
 |note {PlayNote($1)}
 |PLAYEMPTY {PlayEmpty}
-|WAIT INT {Wait($2)}
-|UNITWAIT {Wait(1)}
-|REPEATCOUNTERSET INT {RepeatCounterSet($2)}
-|CALLBLOCK identifier {CallBlock($2)}
-|JUMPBLOCK identifier {JumpBlock($2)}
+|WAIT START_PAR INT END_PAR {Wait($3)}
+|DOT {Wait(1)}
+|REPEATCOUNTERSET START_PAR INT END_PAR {RepeatCounterSet($3)}
+|CALLBLOCK START_PAR identifier END_PAR {CallBlock($3)}
+|JUMPBLOCK START_PAR identifier END_PAR {JumpBlock($3)}
 |RESETSTACK {ResetStack}
 |ENDBLOCK {EndBlock}
 |CONDITIONNALRETURNTRACK {ConditionnalReturnTrack}
@@ -89,7 +89,7 @@ block_list:
 /*----------------------Unit Song Declaration--------------------*/
 /*---------------------------------------------------------------*/
 song:
-|SONG block_list CHANNEL1 identifier CHANNEL2 identifier CHANNEL3 identifier CHANNEL4 identifier {Song($2, $4, $6, $8, $10)}
+|SONG block_list CHANNEL1 identifier CHANNEL2 identifier CHANNEL3 identifier CHANNEL4 identifier {Song($2, Channel($4), Channel($6), Channel($8), Channel($10))}
 
 song_list:
 |{[]} /*nothing is read*/
