@@ -1,0 +1,8 @@
+# ignoring yacc and lex generated files
+parser.ml
+parser.mli
+parser.output
+
+# ignoring compilation files
+*.cmi
+*.cmo
