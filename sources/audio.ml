@@ -63,3 +63,12 @@ type song =
 (*------------- Audio type ---------------*)
 type audio =
 Audio of (instrument list) * (song list)
+
+
+
+(*---------------------------------------------------------------*)
+(*--------------------   display function   ---------------------*)
+(*---------------------------------------------------------------*)
+
+let disp_audio a =
+  Printf.printf "Not implemented yet";;
