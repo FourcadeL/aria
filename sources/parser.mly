@@ -108,6 +108,11 @@ identifier: IDENTIFIER {Id($1)}
 /*---------------------------------------------------------------*/
 note:
 // |base_note INT {Note($1, Oct($2))}
+|C DIESE INT {Note(Cd, Oct($3))}
+|D DIESE INT {Note(Dd, Oct($3))}
+|F DIESE INT {Note(Fd, Oct($3))}
+|G DIESE INT {Note(Gd, Oct($3))}
+|A DIESE INT {Note(Ad, Oct($3))}
 |C INT {Note(C, Oct($2))}
 |D INT {Note(D, Oct($2))}
 |E INT {Note(E, Oct($2))}
@@ -115,11 +120,7 @@ note:
 |G INT {Note(G, Oct($2))}
 |A INT {Note(A, Oct($2))}
 |B INT {Note(B, Oct($2))}
-|C DIESE INT {Note(Cd, Oct($3))}
-|D DIESE INT {Note(Dd, Oct($3))}
-|F DIESE INT {Note(Fd, Oct($3))}
-|G DIESE INT {Note(Gd, Oct($3))}
-|A DIESE INT {Note(Ad, Oct($3))}
+
 
 base_note:
 |C {C}
