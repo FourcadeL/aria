@@ -21,10 +21,10 @@ rule read = parse
 |"song" {SONG}
 |"block" {BLOCK}
 
-|"Ch1" {CHANNEL1}
-|"Ch2" {CHANNEL2}
-|"Ch3" {CHANNEL3}
-|"Ch4" {CHANNEL4}
+|"ch1" {CHANNEL1}
+|"ch2" {CHANNEL2}
+|"ch3" {CHANNEL3}
+|"ch4" {CHANNEL4}
 
 (* Instruction contrôl *)
 |"_" {PLAYEMPTY}

@@ -28,7 +28,7 @@ parser.cmo: audio.cmi parser.cmi
 parser.cmi: parser.mli audio.cmo
 	ocamlc -c $<
 
-test_parser.cmo : parser.cmi lexer.cmo
+test_parser.cmo : parser.cmi lexer.cmo test_parser.ml
 
 test_parser: audio.cmo parser.cmo lexer.cmo test_parser.cmo
 	ocamlc -o $@ $^
