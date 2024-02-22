@@ -3,6 +3,8 @@ parser.ml
 parser.mli
 parser.output
 
+lexer.ml
+
 # ignoring compilation files
 *.cmi
 *.cmo
