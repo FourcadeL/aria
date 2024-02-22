@@ -33,8 +33,6 @@ test_parser.cmo : parser.cmi lexer.cmo
 test_parser: audio.cmo parser.cmo lexer.cmo test_parser.cmo
 	ocamlc -o $@ $^
 
-test_parser: test_parser
-
 clean:
 	-rm lexer.ml parser.ml parser.mli *.cmo *.cmi test_parser parser.output
 

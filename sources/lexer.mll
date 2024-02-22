@@ -56,7 +56,7 @@ rule read = parse
 |"A#" {AD}
 |"B" {B}
 
-|['a'-'z''A'-'Z']['0'-'9''a'-'z''A'-'Z']* {IDENTIFIANT (Lexing.lexeme lexbuf)}
+|['a'-'z''A'-'Z']['0'-'9''a'-'z''A'-'Z']* {IDENTIFIER (Lexing.lexeme lexbuf)}
 |['0'-'9']+ {INT (int_of_string (Lexing.lexeme lexbuf))}
 (* | '{'[^'}']*'}' {read lexbuf}
 
