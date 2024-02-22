@@ -22,7 +22,8 @@ open Audio
 CONDITIONNALGLOBALRETURNTRACK, GLOBALRETURNTRACK, SETRETURNTRACK, SETENDSTATE 
 
 // basenotes
-%token C, CD, D, DD, E, F, FD, G, GD, A, AD, B
+%token C, D, E, F, G, A, B
+%token DIESE
 
 %token <string> IDENTIFIER
 %token <int> INT
@@ -56,7 +57,7 @@ instruction:
 |note {PlayNote($1)}
 |PLAYEMPTY {PlayEmpty}
 |WAIT START_PAR INT END_PAR {Wait($3)}
-|DOT {Wait(1)}
+|UNITWAIT {Wait(1)}
 |REPEATCOUNTERSET START_PAR INT END_PAR {RepeatCounterSet($3)}
 |CALLBLOCK START_PAR identifier END_PAR {CallBlock($3)}
 |JUMPBLOCK START_PAR identifier END_PAR {JumpBlock($3)}
@@ -78,7 +79,7 @@ instruction_list:
 /*-----------------   Unit Block Declaration   ------------------*/
 /*---------------------------------------------------------------*/
 block:
-|BLOCK identifier COLON instruction_list {Block($2, $4)}
+|BLOCK identifier COLON START_BRAC instruction_list END_BRAC {Block($2, $5)}
 
 block_list:
 |{[]} /*nothing is read*/
@@ -106,18 +107,25 @@ identifier: IDENTIFIER {Id($1)}
 /*-------------------------     Note      -----------------------*/
 /*---------------------------------------------------------------*/
 note:
-|base_note INT {Note($1, Oct($2))}
+// |base_note INT {Note($1, Oct($2))}
+|C INT {Note(C, Oct($2))}
+|D INT {Note(D, Oct($2))}
+|E INT {Note(E, Oct($2))}
+|F INT {Note(F, Oct($2))}
+|G INT {Note(G, Oct($2))}
+|A INT {Note(A, Oct($2))}
+|B INT {Note(B, Oct($2))}
+|C DIESE INT {Note(Cd, Oct($3))}
+|D DIESE INT {Note(Dd, Oct($3))}
+|F DIESE INT {Note(Fd, Oct($3))}
+|G DIESE INT {Note(Gd, Oct($3))}
+|A DIESE INT {Note(Ad, Oct($3))}
 
 base_note:
 |C {C}
-|CD {Cd}
 |D {D}
-|DD {Dd}
 |E {E}
 |F {F}
-|FD {Fd}
 |G {G}
-|GD {Gd}
 |A {A}
-|AD {Ad}
 |B {B}

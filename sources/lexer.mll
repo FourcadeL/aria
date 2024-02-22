@@ -42,55 +42,23 @@ rule read = parse
 |"setRet" {SETRETURNTRACK}
 |"setEnd" {SETENDSTATE}
 
-(* note contrôl *)
+(* base note contrôl *)
 |"C" {C}
-|"C#" {CD}
 |"D" {D}
-|"D#" {DD}
 |"E" {E}
 |"F" {F}
-|"F#" {FD}
 |"G" {G}
-|"G#" {GD}
 |"A" {A}
-|"A#" {AD}
 |"B" {B}
+|"#" {DIESE}
 
 |['a'-'z''A'-'Z']['0'-'9''a'-'z''A'-'Z']* {IDENTIFIER (Lexing.lexeme lexbuf)}
 |['0'-'9']+ {INT (int_of_string (Lexing.lexeme lexbuf))}
 (* | '{'[^'}']*'}' {read lexbuf}
-
-| "program" {PROGRAM}
-
-| "var" {VAR}
-| "begin" {BEGIN}
-| "end" {END}
-
-| "function" {FUNCTION}
-| "procedure" {PROCEDURE}
-
-| "integer" {INTEGER}
-| "boolean" {BOOLEAN}
-
-| "if" {IF}
-| "then" {THEN}
-| "else" {ELSE}
-| "while" {WHILE}
-| "do" {DO}
-
-| "and" {AND}
-| "or" {OR}
-| "not" {NOT}
-
-| ":=" {AFFECT}
-
 
 | "new" {NEW}
 | "array" {ARRAY}
 | "of" {OF}
 | "type" {TYPE}
 
-
-
-| "false" {BOOL false}
-| "true" {BOOL true} *)
+*)
