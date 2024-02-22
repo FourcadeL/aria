@@ -20,7 +20,10 @@ open Audio
 %token PLAYEMPTY, UNITWAIT, RESETSTACK, ENDBLOCK, CONDITIONNALRETURNTRACK, RETURNTRACK,
 CONDITIONNALGLOBALRETURNTRACK, GLOBALRETURNTRACK, SETRETURNTRACK, SETENDSTATE 
 
-%token <String> IDENTIFIER
+// basenotes
+%token C, CD, D, DD, E, F, FD, G, GD, A, AD, B
+
+%token <string> IDENTIFIER
 %token <int> INT
 %token <int> OCTAVE
 // %token <Audio.note> NOTE
@@ -55,7 +58,16 @@ instruction:
 |WAIT INT {Wait($2)}
 |UNITWAIT {Wait(1)}
 |REPEATCOUNTERSET INT {RepeatCounterSet($2)}
-// |TODO à terminer selon les instructions restantes
+|CALLBLOCK identifier {CallBlock($2)}
+|JUMPBLOCK identifier {JumpBlock($2)}
+|RESETSTACK {ResetStack}
+|ENDBLOCK {EndBlock}
+|CONDITIONNALRETURNTRACK {ConditionnalReturnTrack}
+|RETURNTRACK {ReturnTrack}
+|CONDITIONNALGLOBALRETURNTRACK {ConditionnalGlobalReturnTrack}
+|GLOBALRETURNTRACK {GlobalReturnTrack}
+|SETRETURNTRACK {SetReturnTrack}
+|SETENDSTATE {SetEndState}
 
 instruction_list:
 |{[]} /*nothing is read*/
@@ -90,3 +102,22 @@ song_list:
 /*---------------------------------------------------------------*/
 identifier: IDENTIFIER {Id($1)}
 
+/*---------------------------------------------------------------*/
+/*-------------------------     Note      -----------------------*/
+/*---------------------------------------------------------------*/
+note:
+|base_note INT {Note($1, Oct($2))}
+
+base_note:
+|C {C}
+|CD {Cd}
+|D {D}
+|DD {Dd}
+|E {E}
+|F {F}
+|FD {Fd}
+|G {G}
+|GD {Gd}
+|A {A}
+|AD {Ad}
+|B {B}
