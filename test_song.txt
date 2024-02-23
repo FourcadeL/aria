@@ -1,6 +1,6 @@
 audio
 song
-block b1 : [ C#1 w F 4 w e ]
+block b1 : [ C#1 w F 4 wait(4) D#5 e ]
 ch1 b1
 ch2 b1
 ch3 b1

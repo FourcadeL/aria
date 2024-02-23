@@ -91,7 +91,7 @@ let note_string note =
 let rec wait_string n buff =
   match n with
   |0 -> buff
-  |1 -> "."
+  |1 -> buff ^ "."
   |n -> wait_string (n-1) (buff ^ ". ")
 
 let instruction_string instruction =
