@@ -65,10 +65,76 @@ type audio =
 Audio of (instrument list) * (song list)
 
 
+(*---------------------------------------------------------------*)
+(*-----------------string description functions------------------*)
+(*---------------------------------------------------------------*)
+
+let baseNote_string baseNote =
+  match baseNote with
+  |C -> "C"
+  |Cd -> "C#"
+  |D -> "D"
+  |Dd -> "D#"
+  |E -> "E"
+  |F -> "F"
+  |Fd -> "F#"
+  |G -> "G"
+  |Gd -> "G#"
+  |A -> "A"
+  |Ad -> "A#"
+  |B -> "B"
+
+let note_string note =
+  match note with
+  |Note(base, Oct(n)) -> (baseNote_string base) ^ (string_of_int n)
+
+let rec wait_string n buff =
+  match n with
+  |0 -> buff
+  |1 -> "."
+  |n -> wait_string (n-1) (buff ^ ". ")
+
+let instruction_string instruction =
+  match instruction with
+  |PlayNote(note) -> note_string note
+  |PlayEmpty -> "_"
+  |Wait(n) -> (wait_string n "")
+  |RepeatCounterSet(n) -> "RepeatSet(" ^ (string_of_int n) ^ ")"
+  |CallBlock(Id(id)) -> "Call(" ^ id ^ ")"
+  |JumpBlock(Id(id)) -> "Jump(" ^ id ^ ")"
+  |ResetStack -> "Clear"
+  |EndBlock -> "End"
+  |ConditionnalReturnTrack -> "TrackRepeatCond"
+  |ReturnTrack -> "TrackRepeat"
+  |ConditionnalGlobalReturnTrack -> "GlobalRepeatCond"
+  |GlobalReturnTrack -> "GlobalRepeat"
+  |SetReturnTrack -> "SetTrack"
+  |SetEndState -> "SetEnd"
+
+
+
 
 (*---------------------------------------------------------------*)
 (*--------------------   display function   ---------------------*)
 (*---------------------------------------------------------------*)
+let instruction_display i =
+  Printf.printf " %s " (instruction_string i)
+
+let block_display b =
+  let Block(Id(id), instructions) = b in
+  Printf.printf "Block : %s\n\t" id;
+  List.iter instruction_display instructions;
+  Printf.printf "\n";;
+
+let song_display s =
+  let Song(blocks, Channel(Id(ch1)), Channel(Id(ch2)), Channel(Id(ch3)), Channel(Id(ch4))) = s in
+  Printf.printf "Song:\n\t|CH1 : %s\n\t|CH2 : %s\n\t|CH3 : %s\n\t|CH4 : %s\n\t" ch1 ch2 ch3 ch4;
+  List.iter block_display blocks;;
 
 let disp_audio a =
-  Printf.printf "Not implemented yet";;
+  let Audio(instruments, songs) = a in
+  Printf.printf "instruments display not implemented yet\n";
+  List.iter song_display songs;
+  
+
+
