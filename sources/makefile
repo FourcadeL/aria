@@ -23,6 +23,8 @@ lexer.ml: lexer.mll
 
 audio.cmo: audio.cmi audio.ml
 
+rgbdsFileGenerator.cmo: rgbdsFileGenerator.cmi rgbdsFileGenerator.ml
+
 parser.cmo: audio.cmi parser.cmi
 
 parser.cmi: parser.mli audio.cmo
@@ -33,10 +35,13 @@ test_parser.cmo : parser.cmi lexer.cmo test_parser.ml
 test_parser: audio.cmo parser.cmo lexer.cmo test_parser.cmo
 	ocamlc -o $@ $^
 
+main: parser.cmo lexer.cmo audio.cmo rgbdsFileGenerator.cmo main.cmo
+	ocamlc -o $@ $^
+
 clean:
-	-rm lexer.ml parser.ml parser.mli *.cmo *.cmi test_parser parser.output
+	-rm lexer.ml parser.ml parser.mli *.cmo *.cmi test_parser parser.output main
 
 
 
 usage:
-	@echo "make \"test_parser\" for tool compiling"
+	@echo "make \"test_parser\" for tool compiling or make \"main\""
