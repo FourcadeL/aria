@@ -4,11 +4,35 @@ open Audio
 (*-----------------Local file writing functions------------------*)
 (*---------------------------------------------------------------*)
 
+let write_instruction out_channel instruction =
+  match instruction with
+  |PlayNote(n) -> () (*TODO cas spécial de la note*)
+  |PlayEmpty -> () (*TODO tous les cas d'instruction en fait*)
+  |Wait(d) -> ()
+  |RepeatCounterSet(v) -> ()
+  |CallBlock(Id(id)) -> ()
+  |JumpBlock(Id(id)) -> ()
+  |ResetStack -> ()
+  |EndBlock -> ()
+  |ConditionnalReturnTrack -> ()
+  |ReturnTrack -> ()
+  |ConditionnalGlobalReturnTrack -> ()
+  |GlobalReturnTrack -> ()
+  |SetReturnTrack -> ()
+  |SetEndState -> ()
+
+
+let rec write_instruction_list outChannel instruction_list =
+  match instruction_list with
+  |[] -> ()
+  |h::q -> write_instruction outChannel h;
+          write_instruction_list outChannel q;
 
 let write_block block outChannel sectionCounter =
   Printf.fprintf outChannel "\tSECTION \"songblock_%s\", ROMX, ALIGN[8]\n" (string_of_int sectionCounter);
   let Block(Id(id), instruction_list) = block in
-  Printf.fprintf outChannel
+  Printf.fprintf outChannel "%s:\n";
+
 
 
 
