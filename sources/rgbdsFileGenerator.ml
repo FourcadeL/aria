@@ -26,12 +26,13 @@ let rec write_instruction_list outChannel instruction_list =
   match instruction_list with
   |[] -> ()
   |h::q -> write_instruction outChannel h;
-          write_instruction_list outChannel q;
+          write_instruction_list outChannel q;;
 
 let write_block block outChannel sectionCounter =
   Printf.fprintf outChannel "\tSECTION \"songblock_%s\", ROMX, ALIGN[8]\n" (string_of_int sectionCounter);
   let Block(Id(id), instruction_list) = block in
-  Printf.fprintf outChannel "%s:\n";
+  Printf.fprintf outChannel "%s:\n" id;
+  write_instruction_list outChannel instruction_list;;
 
 
 
