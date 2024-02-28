@@ -23,9 +23,9 @@ lexer.ml: lexer.mll
 
 audio.cmo: audio.cmi audio.ml
 
-binaryTranslator.cmo: binaryTranslator.cmi binaryTranslator.ml
+binaryTranslator.cmo: binaryTranslator.cmi binaryTranslator.ml audio.cmi
 
-rgbdsFileGenerator.cmo: rgbdsFileGenerator.cmi rgbdsFileGenerator.ml binaryTranslator.cmi
+rgbdsFileGenerator.cmo: rgbdsFileGenerator.cmi rgbdsFileGenerator.ml binaryTranslator.cmi audio.cmi
 
 parser.cmo: audio.cmi parser.cmi
 
