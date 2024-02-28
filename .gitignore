@@ -11,3 +11,4 @@ lexer.ml
 
 # ignoring binary files
 */test_parser
+*/main
