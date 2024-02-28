@@ -32,11 +32,11 @@ let get_instruction_value instruction =
   |RepeatCounterSet(v) -> 0b10100000 + v
   |CallBlock(Id(_)) -> 0b10001011
   |JumpBlock(Id(_)) -> 0b10001010
-  |ResetStack -> ()
-  |EndBlock -> ()
-  |ConditionnalReturnTrack -> ()
-  |ReturnTrack -> ()
-  |ConditionnalGlobalReturnTrack -> ()
-  |GlobalReturnTrack -> ()
-  |SetReturnTrack -> ()
-  |SetEndState -> 0b00000001
+  |ResetStack -> 0b10001001
+  |EndBlock -> 0b10001000
+  |ConditionnalReturnTrack -> 0b10000111
+  |ReturnTrack -> 0b10000110
+  |ConditionnalGlobalReturnTrack -> 0b10000101
+  |GlobalReturnTrack -> 0b10000100
+  |SetReturnTrack -> 0b10000001
+  |SetEndState -> 0b10000000
