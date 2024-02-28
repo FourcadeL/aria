@@ -12,3 +12,6 @@ lexer.ml
 # ignoring binary files
 */test_parser
 */main
+
+# ignoring asm generated files
+*/*.asm
