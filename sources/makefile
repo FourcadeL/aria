@@ -23,7 +23,11 @@ lexer.ml: lexer.mll
 
 audio.cmo: audio.cmi audio.ml
 
+checker.cmo: checker.cmi checker.ml audio.cmi binaryTranslator.cmi
+
 binaryTranslator.cmo: binaryTranslator.cmi binaryTranslator.ml audio.cmi
+
+compress.cmo: compress.cmi compress.ml audio.cmi
 
 rgbdsFileGenerator.cmo: rgbdsFileGenerator.cmi rgbdsFileGenerator.ml binaryTranslator.cmi audio.cmi
 
@@ -37,7 +41,7 @@ test_parser.cmo : parser.cmi lexer.cmo test_parser.ml
 test_parser: audio.cmo parser.cmo lexer.cmo test_parser.cmo
 	ocamlc -o $@ $^
 
-main: parser.cmo lexer.cmo audio.cmo rgbdsFileGenerator.cmo main.cmo binaryTranslator.cmo
+main: audio.cmo parser.cmo lexer.cmo binaryTranslator.cmo checker.cmo compress.cmo rgbdsFileGenerator.cmo main.cmo
 	ocamlc -o $@ $^
 
 clean:

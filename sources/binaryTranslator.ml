@@ -40,3 +40,11 @@ let get_instruction_value instruction =
   |GlobalReturnTrack -> 0b10000100
   |SetReturnTrack -> 0b10000001
   |SetEndState -> 0b10000000
+
+
+
+let get_instruction_byte_size instruction =
+  match instruction with
+  |CallBlock(_) -> 2
+  |JumpBlock(_) -> 2
+  |_ -> 1
