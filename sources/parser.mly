@@ -22,8 +22,7 @@ open Audio
 CONDITIONNALGLOBALRETURNTRACK, GLOBALRETURNTRACK, SETRETURNTRACK, SETENDSTATE 
 
 // basenotes
-%token C, D, E, F, G, A, B
-%token DIESE
+%token <string> BASENOTE
 
 %token <string> IDENTIFIER
 %token <int> INT
@@ -34,7 +33,7 @@ CONDITIONNALGLOBALRETURNTRACK, GLOBALRETURNTRACK, SETRETURNTRACK, SETENDSTATE
 
 %%
 start:
-|AUDIO instrument_list song_list END {Audio($2, $3)}
+|AUDIO instrument_list song_list block_list END {Audio($2, $3, $4)}
 
 
 
@@ -69,6 +68,11 @@ instruction:
 |GLOBALRETURNTRACK {GlobalReturnTrack}
 |SETRETURNTRACK {SetReturnTrack}
 |SETENDSTATE {SetEndState}
+|error {let start_pos = Parsing.rhs_start_pos 1 in
+        let end_pos = Parsing.rhs_end_pos 1 in
+        Printf.printf "unexpected instruction at Line %d : %d - %d\n"
+        start_pos.pos_lnum (start_pos.pos_cnum - start_pos.pos_bol) (end_pos.pos_cnum - end_pos.pos_bol);
+        failwith ("unexpected token")}
 
 instruction_list:
 |{[]} /*nothing is read*/
@@ -90,7 +94,7 @@ block_list:
 /*----------------------Unit Song Declaration--------------------*/
 /*---------------------------------------------------------------*/
 song:
-|SONG block_list CHANNEL1 identifier CHANNEL2 identifier CHANNEL3 identifier CHANNEL4 identifier {Song($2, Channel($4), Channel($6), Channel($8), Channel($10))}
+|SONG identifier COLON CHANNEL1 identifier CHANNEL2 identifier CHANNEL3 identifier CHANNEL4 identifier {Song($2, Channel($5), Channel($7), Channel($9), Channel($11))}
 
 song_list:
 |{[]} /*nothing is read*/
@@ -99,34 +103,12 @@ song_list:
 
 
 /*---------------------------------------------------------------*/
-/*----------------------     Identifier      --------------------*/
-/*---------------------------------------------------------------*/
-identifier: IDENTIFIER {Id($1)}
-
-/*---------------------------------------------------------------*/
 /*-------------------------     Note      -----------------------*/
 /*---------------------------------------------------------------*/
 note:
-// |base_note INT {Note($1, Oct($2))}
-|C DIESE INT {Note(Cd, Oct($3))}
-|D DIESE INT {Note(Dd, Oct($3))}
-|F DIESE INT {Note(Fd, Oct($3))}
-|G DIESE INT {Note(Gd, Oct($3))}
-|A DIESE INT {Note(Ad, Oct($3))}
-|C INT {Note(C, Oct($2))}
-|D INT {Note(D, Oct($2))}
-|E INT {Note(E, Oct($2))}
-|F INT {Note(F, Oct($2))}
-|G INT {Note(G, Oct($2))}
-|A INT {Note(A, Oct($2))}
-|B INT {Note(B, Oct($2))}
+|BASENOTE INT {Note(Audio.basenote_of_string $1, Oct($2))}
 
-
-base_note:
-|C {C}
-|D {D}
-|E {E}
-|F {F}
-|G {G}
-|A {A}
-|B {B}
+/*---------------------------------------------------------------*/
+/*----------------------     Identifier      --------------------*/
+/*---------------------------------------------------------------*/
+identifier: IDENTIFIER {Id($1)}

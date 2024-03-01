@@ -53,7 +53,7 @@ type block =
 |Block of (identifier * (instruction list))
 
 type song =
-|Song of ((block list) * channel * channel * channel * channel)
+|Song of (identifier * channel * channel * channel * channel)
 
 
 
@@ -62,7 +62,14 @@ type song =
 
 (*------------- Audio type ---------------*)
 type audio =
-Audio of (instrument list) * (song list)
+Audio of (instrument list) * (song list) * (block list)
+
+
+(*---------------------------------------------------------------*)
+(*--------------------   generator function   -------------------*)
+(*---------------------------------------------------------------*)
+
+val basenote_of_string : string -> baseNote
 
 
 (*---------------------------------------------------------------*)
@@ -70,3 +77,7 @@ Audio of (instrument list) * (song list)
 (*---------------------------------------------------------------*)
 
 val disp_audio : audio -> unit
+
+val song_display : song -> unit
+
+val block_display : block -> unit

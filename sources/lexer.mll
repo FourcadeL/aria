@@ -1,10 +1,17 @@
 {
 open Parser
+let incr_linenum lexbuf =
+  let pos = lexbuf.Lexing.lex_curr_p in
+  lexbuf.Lexing.lex_curr_p <- {pos with
+    Lexing.pos_lnum = pos.Lexing.pos_lnum + 1;
+    Lexing.pos_bol = pos.Lexing.pos_cnum;
+  }
 }
 rule read = parse
 | ' ' {read lexbuf}
 | '\t' {read lexbuf}
-| '\n' {read lexbuf}
+| '\n' {incr_linenum lexbuf; read lexbuf}
+| '%' {comment lexbuf}
 | '(' {START_PAR}
 | ')' {END_PAR}
 | '[' {START_BRAC}
@@ -42,15 +49,15 @@ rule read = parse
 |"setRet" {SETRETURNTRACK}
 |"setEnd" {SETENDSTATE}
 
-(* base note contrôl *)
-|"C" {C}
-|"D" {D}
-|"E" {E}
-|"F" {F}
-|"G" {G}
-|"A" {A}
-|"B" {B}
-|"#" {DIESE}
+(*base note*)
+|['A'-'G']['#''b']? {BASENOTE (Lexing.lexeme lexbuf)}
 
-|['a'-'z''A'-'Z']['0'-'9''a'-'z''A'-'Z']* {IDENTIFIER (Lexing.lexeme lexbuf)}
+(* base types *)
+|['a'-'z''A'-'Z']['a'-'z''A'-'Z']['a'-'z''A'-'Z']['0'-'9''a'-'z''A'-'Z']* {IDENTIFIER (Lexing.lexeme lexbuf)}
+(*the quickfix for identifier and basenote confusion is that identifier are now required to be at least 3 non-alphabetic characters longs*)
 |['0'-'9']+ {INT (int_of_string (Lexing.lexeme lexbuf))}
+
+
+and comment = parse
+| '\n' {incr_linenum lexbuf; read lexbuf} (*moves out of the comment lexing*)
+| _ {comment lexbuf} (*stays in comment mode*)

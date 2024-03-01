@@ -53,7 +53,7 @@ type block =
 |Block of (identifier * (instruction list))
 
 type song =
-|Song of ((block list) * channel * channel * channel * channel)
+|Song of (identifier * channel * channel * channel * channel)
 
 
 
@@ -62,7 +62,7 @@ type song =
 
 (*------------- Audio type ---------------*)
 type audio =
-Audio of (instrument list) * (song list)
+Audio of (instrument list) * (song list) * (block list)
 
 
 (*---------------------------------------------------------------*)
@@ -111,8 +111,29 @@ let instruction_string instruction =
   |SetReturnTrack -> "SetTrack"
   |SetEndState -> "SetEnd"
 
-
-
+(*---------------------------------------------------------------*)
+(*--------------------   generator function   -------------------*)
+(*---------------------------------------------------------------*)
+let basenote_of_string str =
+match str with
+|"C" -> C
+|"C#" -> Cd
+|"Db" -> Cd
+|"D" -> D
+|"D#" -> Dd
+|"Eb" -> Dd
+|"E" -> E
+|"F" -> F
+|"F#" -> Fd
+|"Gb" -> Fd
+|"G" -> G
+|"G#" -> Gd
+|"Ab" -> Gd
+|"A" -> A
+|"A#" -> Ad
+|"Bb" -> Ad
+|"B" -> B
+|_ -> failwith "unknown note match"
 
 (*---------------------------------------------------------------*)
 (*--------------------   display function   ---------------------*)
@@ -128,13 +149,13 @@ let block_display b =
 
 let song_display s =
   let Song(blocks, Channel(Id(ch1)), Channel(Id(ch2)), Channel(Id(ch3)), Channel(Id(ch4))) = s in
-  Printf.printf "Song:\n\t|CH1 : %s\n\t|CH2 : %s\n\t|CH3 : %s\n\t|CH4 : %s\n\t" ch1 ch2 ch3 ch4;
-  List.iter block_display blocks;;
+  Printf.printf "Song:\n\t|CH1 : %s\n\t|CH2 : %s\n\t|CH3 : %s\n\t|CH4 : %s\n" ch1 ch2 ch3 ch4;;
 
 let disp_audio a =
-  let Audio(instruments, songs) = a in
+  let Audio(instruments, songs, blocks) = a in
   Printf.printf "instruments display not implemented yet\n";
   List.iter song_display songs;
+  List.iter block_display blocks;
   
 
 
