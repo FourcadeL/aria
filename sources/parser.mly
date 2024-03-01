@@ -56,7 +56,7 @@ instruction:
 |note {PlayNote($1)}
 |PLAYEMPTY {PlayEmpty}
 |WAIT START_PAR INT END_PAR {Wait($3)}
-|UNITWAIT {Wait(1)}
+|DOT {Wait(1)}
 |REPEATCOUNTERSET START_PAR INT END_PAR {RepeatCounterSet($3)}
 |CALLBLOCK START_PAR identifier END_PAR {CallBlock($3)}
 |JUMPBLOCK START_PAR identifier END_PAR {JumpBlock($3)}
