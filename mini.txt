@@ -1,0 +1,10 @@
+% test de commentaire
+audio
+song test :
+ch1 bic
+ch2 bcii
+ch3 bci
+ch4 bci
+
+block bic : [ C#3 w w w w w w Db5 w w C#3 wait(4) w w wait(3) Db5 C#3 wait(5) Db5 w w w]
+end

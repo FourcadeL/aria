@@ -1,0 +1,13 @@
+% version essai de starfield (de salamander ^^)
+
+audio
+song starfield :
+ch1 block1
+ch2 block2
+ch3 block3
+ch4 block4
+
+block block1 : [setRep(3) setRet C5 E5 G5 C6 condReturn setRep(3) setRet C5 Eb5 Ab5 C6 condReturn setRep(3) setRet Bb4 D5 F5 Bb5 condReturn setRep(1) setRet C5 D5 F5 C6 condReturn setRep(1) setRet B4 D5 F5 B5 condReturn |]
+block block2 : [_ . . . . . . . . . . . . . . . . . . . returnGlobal]
+block block3 : [C3 .  .  .  .  .  .  .  .  .  .  .  .  .  .  . Ab2 .  .  .  .  .  .  .  .  .  .  .  .  .  .  . Bb2 . . . . . . . . . . . . . . . G2 . . . . . . . . . . . . . . .                                           | C3 . C3 . C3 . C3 . C3 . C3 . C3 C4 C3 . | ]
+block block4 : []

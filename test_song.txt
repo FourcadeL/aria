@@ -1,8 +1,26 @@
 audio
-song
-block b1 : [ C#1 w F 4 wait(4) D#5 e ]
+song test1 :
 ch1 b1
 ch2 b1
 ch3 b1
 ch4 b1
+song test2 :
+ch1 b21
+ch2 b22
+ch3 b23
+ch4 b3
+song test3 :
+ch1 test1
+ch2 test2
+ch3 i44
+ch4 b3
+
+block b1 : [ C#3 w F 4 wait(4) D#5 call(b1) e ]
+block b2 : [ C 3 w F 4 wait(4) D#5 call(b1) e ]
+block b3 : [ D 3 w F 4 wait(4) D#5 call(b1) e ]
+block b21 : [ C#3 w F 4 wait(4) D#5 call(b1) e ]
+block b22 : [ C 3 w F 4 wait(4) D#5 call(b1) e ]
+block b23 : [ D 3 w F 4 wait(4) D#5 call(b1) e ]
+block toolong : [ D 3 w F 4 wait(4) D#5 call(b1) e F#6 F#6
+wait(7)]
 end
