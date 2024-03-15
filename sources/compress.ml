@@ -55,8 +55,8 @@ let rec pass_wait_instruction instructionList =
   in
   match instructionList with
   |[] -> []
-  |PlayNote(n)::q -> PlayNote(n)::(aux_get_next_wait q)::(pass_wait_instruction q)
-  |PlayEmpty::q -> PlayEmpty::(aux_get_next_wait q)::(pass_wait_instruction q)
+  |PlayNote(n)::q -> (aux_get_next_wait q)::PlayNote(n)::(pass_wait_instruction q)
+  |PlayEmpty::q -> (aux_get_next_wait q)::PlayEmpty::(pass_wait_instruction q)
   |Wait(_)::q -> pass_wait_instruction q
   |h::q -> h::pass_wait_instruction q
 

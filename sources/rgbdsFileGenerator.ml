@@ -7,7 +7,7 @@ open BinaryTranslator
 
 let write_instruction outChannel instruction =
   let v = get_instruction_value instruction in
-  let _ = Printf.fprintf outChannel "\tDB $%0*X\n" 2 v in
+  let _ = Printf.fprintf outChannel "\tDB $%0*X ; %s \n" 2 v (instruction_string instruction) in
   match instruction with
   |CallBlock(Id(id)) -> Printf.fprintf outChannel "\tDB HIGH(%s)\n" id (*special cases of 2 bytes instructions*)
   |JumpBlock(Id(id)) -> Printf.fprintf outChannel "\tDB HIGH(%s)\n" id
@@ -30,7 +30,7 @@ let write_block block outChannel sectionCounter =
 
 let write_instrument outChannel instr = 
   let Instrument(_, v1, v2, v3, v4) = instr in
-  Printf.fprintf outChannel "\t DB $%x, $%x, $%x, $%x\n" v1 v2 v3 v4
+  Printf.fprintf outChannel "\t DB $%0*X, $%0*X, $%0*X, $%0*X\n" 2 v1 2 v2 2 v3 2 v4
 
 (*---------------------------------------------------------------*)
 (*-----------------Local file writing functions------------------*)
@@ -42,7 +42,7 @@ let write_file_header outChannel =
 
 
 let write_instruments outChannel instrs =
-  Printf.fprintf outChannel "\tSECTION \"instruments sheet\", ROMX, ALIGN[6]\n_instruments_sheet:\n";
+  Printf.fprintf outChannel "\tSECTION \"instruments sheet\", ROMX, ALIGN[6]\n_instruments_sheet::\n";
   List.iter (write_instrument outChannel) instrs
 
 let write_songs_channel_pointers outChannel songs =
@@ -50,7 +50,7 @@ let write_songs_channel_pointers outChannel songs =
     match song_list with
     |[] -> ()
     |Song(_, Channel(Id(id1)), Channel(Id(id2)), Channel(Id(id3)), Channel(Id(id4)))::q ->
-      Printf.fprintf outChannel "song_%s:\n" (string_of_int counter);
+      Printf.fprintf outChannel "song_%s::\n" (string_of_int counter);
       Printf.fprintf outChannel "\tDB HIGH(%s), HIGH(%s), HIGH(%s), HIGH(%s)\n" id1 id2 id3 id4;
       aux q (counter + 1);
   in
