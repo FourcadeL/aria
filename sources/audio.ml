@@ -33,6 +33,8 @@ type instrument =
 type instruction =
 |PlayNote of note
 |PlayEmpty
+|VolumeSet of int
+|InstrumentSet of int
 |Wait of int
 |RepeatCounterSet of int
 |CallBlock of identifier
@@ -98,6 +100,8 @@ let instruction_string instruction =
   match instruction with
   |PlayNote(note) -> note_string note
   |PlayEmpty -> "_"
+  |VolumeSet(v) -> "Set Volume(" ^ string_of_int v ^ ")"
+  |InstrumentSet(i) -> "Set Instrument(" ^ string_of_int i ^ ")"
   |Wait(n) -> "Set wait (" ^ string_of_int n ^ ")" ^ (wait_string n "")
   |RepeatCounterSet(n) -> "RepeatSet(" ^ (string_of_int n) ^ ")"
   |CallBlock(Id(id)) -> "Call(" ^ id ^ ")"

@@ -37,7 +37,8 @@ rule read = parse
 (* Instruction contrôl *)
 |"_" {PLAYEMPTY}
 |"wait" {WAIT}
-|"w" {UNITWAIT}
+|"setVol" {SETVOLUME}
+|"setInst" {SETINSTRUMENT}
 |"setRep" {REPEATCOUNTERSET}
 |"call" {CALLBLOCK}
 |"jump" {JUMPBLOCK}

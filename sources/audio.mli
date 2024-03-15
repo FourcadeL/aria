@@ -33,6 +33,8 @@ type instrument =
 type instruction =
 |PlayNote of note
 |PlayEmpty
+|VolumeSet of int
+|InstrumentSet of int
 |Wait of int
 |RepeatCounterSet of int
 |CallBlock of identifier
