@@ -21,15 +21,10 @@ check_songs_pointers songs blocks;
 let testBlockSizes = check_blocks_size blocks in
 if not testBlockSizes then failwith "there were errors in file";
 
-(*compression pass (debug)*)
-let Audio(_, _, bloc::q) = audioParsed in
-Audio.block_display bloc;
-let Block(_, instrs) = bloc in
-let b = merge_waits instrs in
-let bb = Block(Id("zzz"), b) in
-Audio.block_display bb;
+(*compression pass*)
+let audioCompressed = compress_audio audioParsed in
 
 (* output rgbds file *)
 
-Printf.printf "Outputin rgbds file ...\n";;
-output_rgbds_file audioParsed "test"
+Printf.printf "Outputin rgbds file ...\n";
+output_rgbds_file audioCompressed "test"
