@@ -9,6 +9,7 @@ let incr_linenum lexbuf =
 }
 rule read = parse
 | ' ' {read lexbuf}
+| '|' {read lexbuf}
 | '\t' {read lexbuf}
 | '\n' {incr_linenum lexbuf; read lexbuf}
 | '%' {comment lexbuf}
@@ -56,6 +57,14 @@ rule read = parse
 |['a'-'z''A'-'Z']['a'-'z''A'-'Z']['a'-'z''A'-'Z']['0'-'9''a'-'z''A'-'Z']* {IDENTIFIER (Lexing.lexeme lexbuf)}
 (*the quickfix for identifier and basenote confusion is that identifier are now required to be at least 3 non-alphabetic characters longs*)
 |['0'-'9']+ {INT (int_of_string (Lexing.lexeme lexbuf))}
+
+(* read error *)
+| _ {let start_pos = Parsing.rhs_start_pos 1 in
+        let end_pos = Parsing.rhs_end_pos 1 in
+        Printf.printf "unexpected character \"%s\" at Line %d : %d - %d\n"
+        (Lexing.lexeme lexbuf)
+        start_pos.pos_lnum (start_pos.pos_cnum - start_pos.pos_bol) (end_pos.pos_cnum - end_pos.pos_bol);
+        failwith ("unexpected character")}
 
 
 and comment = parse

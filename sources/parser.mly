@@ -34,6 +34,11 @@ CONDITIONNALGLOBALRETURNTRACK, GLOBALRETURNTRACK, SETRETURNTRACK, SETENDSTATE
 %%
 start:
 |AUDIO instrument_list song_list block_list END {Audio($2, $3, $4)}
+|error {let start_pos = Parsing.rhs_start_pos 1 in
+        let end_pos = Parsing.rhs_end_pos 1 in
+        Printf.printf "unexpected encounter at Line %d : %d - %d\n"
+        start_pos.pos_lnum (start_pos.pos_cnum - start_pos.pos_bol) (end_pos.pos_cnum - end_pos.pos_bol);
+        failwith ("unexpected error")}
 
 
 
@@ -41,7 +46,7 @@ start:
 /*-----------------Unit Instruments Declaration------------------*/
 /*---------------------------------------------------------------*/
 instrument:
-|INSTRUMENT identifier COLON INT SEMI_COLON INT SEMI_COLON INT SEMI_COLON INT SEMI_COLON {Instrument($2, $4, $6, $8, $10)}
+|INSTRUMENT identifier COLON INT COMA INT COMA INT COMA INT SEMI_COLON {Instrument($2, $4, $6, $8, $10)}
 
 instrument_list:
 |{[]} /*nothing is read*/
