@@ -98,7 +98,7 @@ let instruction_string instruction =
   match instruction with
   |PlayNote(note) -> note_string note
   |PlayEmpty -> "_"
-  |Wait(n) -> (wait_string n "")
+  |Wait(n) -> "Set wait (" ^ string_of_int n ^ ")" ^ (wait_string n "")
   |RepeatCounterSet(n) -> "RepeatSet(" ^ (string_of_int n) ^ ")"
   |CallBlock(Id(id)) -> "Call(" ^ id ^ ")"
   |JumpBlock(Id(id)) -> "Jump(" ^ id ^ ")"
@@ -108,7 +108,7 @@ let instruction_string instruction =
   |ReturnTrack -> "TrackRepeat"
   |ConditionnalGlobalReturnTrack -> "GlobalRepeatCond"
   |GlobalReturnTrack -> "GlobalRepeat"
-  |SetReturnTrack -> "SetTrack"
+  |SetReturnTrack -> "SetReturnTrack"
   |SetEndState -> "SetEnd"
 
 (*---------------------------------------------------------------*)
