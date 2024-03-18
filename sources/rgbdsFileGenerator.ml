@@ -9,8 +9,8 @@ let write_instruction outChannel instruction =
   let v = get_instruction_value instruction in
   let _ = Printf.fprintf outChannel "\tDB $%0*X ; %s \n" 2 v (instruction_string instruction) in
   match instruction with
-  |CallBlock(Id(id)) -> Printf.fprintf outChannel "\tDB HIGH(%s)\n" id (*special cases of 2 bytes instructions*)
-  |JumpBlock(Id(id)) -> Printf.fprintf outChannel "\tDB HIGH(%s)\n" id
+  |CallBlock(Id(id)) -> Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s)\n" id id (*special cases of 2 bytes instructions*)
+  |JumpBlock(Id(id)) -> Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s)\n" id id
   |_ -> ()
 
 
@@ -21,7 +21,7 @@ let rec write_instruction_list outChannel instruction_list =
           write_instruction_list outChannel q;;
 
 let write_block block outChannel sectionCounter =
-  Printf.fprintf outChannel "\tSECTION \"songblock_%s\", ROMX, ALIGN[8]\n" (string_of_int sectionCounter);
+  Printf.fprintf outChannel "\tSECTION \"songblock_%s\", ROMX\n" (string_of_int sectionCounter);
   let Block(Id(id), instruction_list) = block in
   Printf.fprintf outChannel "%s:\n" id;
   write_instruction_list outChannel instruction_list;
@@ -51,7 +51,7 @@ let write_songs_channel_pointers outChannel songs =
     |[] -> ()
     |Song(_, Channel(Id(id1)), Channel(Id(id2)), Channel(Id(id3)), Channel(Id(id4)))::q ->
       Printf.fprintf outChannel "song_%s::\n" (string_of_int counter);
-      Printf.fprintf outChannel "\tDB HIGH(%s), HIGH(%s), HIGH(%s), HIGH(%s)\n" id1 id2 id3 id4;
+      Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s), LOW(%s), HIGH(%s), LOW(%s), HIGH(%s), LOW(%s), HIGH(%s)\n" id1 id1 id2 id2 id3 id3 id4 id4;
       aux q (counter + 1);
   in
   Printf.fprintf outChannel "\tSECTION \"songs lookup\", ROMX\n";
@@ -106,7 +106,7 @@ _song_name_2:
   .
   .
   
-  SECTION "songblock_1", ROMX, ALIGN[8] (8 aligned as required by the engine)
+  SECTION "songblock_1", ROMX
 _block_name_1:
   DB %bbbbbbbb
   DB %bbbbbbbb
@@ -116,7 +116,7 @@ _block_name_1:
   DB %bbbbbbbb
   DB %bbbbbbbb
 
-  SECTION "songblock_2", ROMX, ALIGN[8] (8 aligned as required by the engine)
+  SECTION "songblock_2", ROMX
 _block_name_2:
   DB %bbbbbbbb
   DB %bbbbbbbb
