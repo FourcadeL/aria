@@ -9,16 +9,26 @@ instrument base3 :
 0, 16, 32, 128; % main wave 
 
 song starfield :
-ch1 main1
+ch1 Smain1
 ch2 empty
-ch3 mainwave
+ch3 Smainwave
 ch4 empty
 
-block main1 : [setInst(0) setRep(3) setRet C5 E5 G5 C6 condReturn setRep(3) setRet C5 Eb5 Ab5 C6 condReturn setRep(3) setRet Bb4 D5 F5 Bb5 condReturn setRep(1) setRet C5 D5 G5 C6 condReturn setRep(1) setRet B4 D5 G5 B5 condReturn | call(themeA1) call(themeB1)       | returnGlobal e]
-block mainwave : [setInst(2) setVol(4) C3 .  .  .  .  .  .  .  .  .  .  .  .  .  .  . Ab2 .  .  .  .  .  .  .  .  .  .  .  .  .  .  . Bb2 . . . . . . . . . . . . . . . G2 . . . . . . . . . . . . . . .                              | call(themeAwave) call(themeBwave) | returnGlobal e]
-block themeA1 : [setRep(1) setRet E4 .... F4 G4 C5 G5 .......               | Eb4 .... F4 Ab4 C5 Eb5 .......                  | D4 .... Eb4 F4 Bb4 F5 .. Eb5 .. F5 .                  | D5 ... B4 ... G4 ... F4 ...               condReturn e]
-block themeAwave : [setRep(1) setRet C3 . C3 . C3 . C3 . C3 . C3 . C3 C4 C3 . |Ab2 . Ab2 . Ab2 . Ab2 . Ab2 . Ab2 . Ab2 Ab3 Ab2 . | Bb2 . Bb2 . Bb2 . Bb2 . Bb2 . Bb2 . Bb2 Bb3 Bb2 . | G2 . G2 . G2 . G2 . G2 G3 G2 . B2 B3 B2 . condReturn e]
-block themeB1 : [ _ C5 . C5 C5 . D5 . Eb5 .. D5 .. C5 .       | _ Bb4 . Bb4 Bb4 . D5 . Eb5 .. D5 .. Bb4 . | _Ab4 . Ab4 Ab4 . D5 . Eb5 .. D5 .. Ab4 . | _ G4 . G4 G4 . D5 . Eb5 .. Eb5 .. Db5 .                               | _ C5 . C5 C5 . D5 . Eb5 .. D5 .. C5 .     | _ Bb4 . Bb4 Bb4 . D5 . Eb5 .. D5 .. Bb4 . | _ A4 . A4 A4 . D5 . Eb5 .. D5.. C5 .    | C5 .. F5 .. G5 .. C6 .. D6 ... e ]
-block themeBwave : [setRep(3) setRet Ab2 . Eb3 Ab3 condReturn | setRep(3) setRet G2 . Eb3 G3 condReturn   | setRep(3) setRet F2 . C3 F3 condReturn   | setRep(1) setRet Eb2 . Bb2 Eb3 condReturn Eb2 . Eb3 Eb2 Eb2 G3 Eb3 G3 | setRep(3) setRet Ab2 . Eb3 Ab3 condReturn | setRep(3) setRet G2 . Eb3 G3 condReturn   | setRep(3) setRet F2 . Eb3 F3 condReturn | setRep(3) setRet G2 . D3 G3 condReturn e]
+song mirroredmountains :
+ch1 Gmain1
+ch2 Gmain2
+ch3 Gwave
+ch4 empty
+
+block Smain1 : [setInst(0) setRep(3) setRet C5 E5 G5 C6 condReturn setRep(3) setRet C5 Eb5 Ab5 C6 condReturn setRep(3) setRet Bb4 D5 F5 Bb5 condReturn setRep(1) setRet C5 D5 G5 C6 condReturn setRep(1) setRet B4 D5 G5 B5 condReturn | call(SthemeA1) call(SthemeB1)       | returnGlobal e]
+block Smainwave : [setInst(2) setVol(4) C3 .  .  .  .  .  .  .  .  .  .  .  .  .  .  . Ab2 .  .  .  .  .  .  .  .  .  .  .  .  .  .  . Bb2 . . . . . . . . . . . . . . . G2 . . . . . . . . . . . . . . .                              | call(SthemeAwave) call(SthemeBwave) | returnGlobal e]
+block SthemeA1 : [setRep(1) setRet E4 .... F4 G4 C5 G5 .......               | Eb4 .... F4 Ab4 C5 Eb5 .......                  | D4 .... Eb4 F4 Bb4 F5 .. Eb5 .. F5 .                  | D5 ... B4 ... G4 ... F4 ...               condReturn e]
+block SthemeAwave : [setRep(1) setRet C3 . C3 . C3 . C3 . C3 . C3 . C3 C4 C3 . |Ab2 . Ab2 . Ab2 . Ab2 . Ab2 . Ab2 . Ab2 Ab3 Ab2 . | Bb2 . Bb2 . Bb2 . Bb2 . Bb2 . Bb2 . Bb2 Bb3 Bb2 . | G2 . G2 . G2 . G2 . G2 G3 G2 . B2 B3 B2 . condReturn e]
+block SthemeB1 : [ _ C5 . C5 C5 . D5 . Eb5 .. D5 .. C5 .       | _ Bb4 . Bb4 Bb4 . D5 . Eb5 .. D5 .. Bb4 . | _Ab4 . Ab4 Ab4 . D5 . Eb5 .. D5 .. Ab4 . | _ G4 . G4 G4 . D5 . Eb5 .. Eb5 .. Db5 .                               | _ C5 . C5 C5 . D5 . Eb5 .. D5 .. C5 .     | _ Bb4 . Bb4 Bb4 . D5 . Eb5 .. D5 .. Bb4 . | _ A4 . A4 A4 . D5 . Eb5 .. D5.. C5 .    | C5 .. F5 .. G5 .. C6 .. D6 ... e ]
+block SthemeBwave : [setRep(3) setRet Ab2 . Eb3 Ab3 condReturn | setRep(3) setRet G2 . Eb3 G3 condReturn   | setRep(3) setRet F2 . C3 F3 condReturn   | setRep(1) setRet Eb2 . Bb2 Eb3 condReturn Eb2 . Eb3 Eb2 Eb2 G3 Eb3 G3 | setRep(3) setRet Ab2 . Eb3 Ab3 condReturn | setRep(3) setRet G2 . Eb3 G3 condReturn   | setRep(3) setRet F2 . Eb3 F3 condReturn | setRep(3) setRet G2 . D3 G3 condReturn e]
 block empty : [_ ...............................................................returnGlobal]
+
+block Gmain1 : [setInst(0) setVol(14) C5 . C5 .. C5 C5 . D5 . D5 . G4 . G4 . | D#5 . D#5 ... D#5 . F5 . F5 . G4 G4 . G4  | G5 ....... F5 E5 C5 G4 .... | F4 E4 C4 G3 .... E4 .. G4 ..C5 .   | G5 ....... F5 E5 C5 G4 .... | F4 E4 C4 G3 .... G4 .. C5 .. E5 . | G5 ....... F5 E5 C5 F4 .. D4 E4 | F4 .. E4 .. F4 . G4 .. F4 .. G4 . | G#4 A#4 C5 D5 Eb5 D5 C5 Bb4 Ab4 Bb4 Ab4 G4 F4 G4 F4 Eb4                       | D4 .. F4 .. A#4 .. D#5 .. G#5 ... | G5 ....... F5 E5 C5 G4 . G4 C5 .        | D5 Eb5 . Eb5 .... Eb5 F5 . F5 ....             | F5 G5 . G5 . F5 G5 ........ _ | returnGlobal e]
+block Gmain2 : [setInst(0) setVol(9)  A4 . A4 .. A4 A4 . B4 . B4 . D4 . D4 . | C5 . C5 ... C5 . D5 . D5 . D4 D4 . D4     | E5 ....... _ ... F5 E5 C5 G4 | _ ... F5 E5 C5 G4 C5 .. E5 .. G5 .| E5 ....... _ ... F5 E5 C5 G4| _ ... F5 E5 C5 G4 C5 .. E5 .. G5 .| C5 ....... D5 .......           | D5 ....... E5 .......             | C5 ... D5 ... D#5 ... F5 ...                                                  | G5 .. C4 .. F4 .. A#4 .. D#5 ...  | E5 ....... _ ..... Eb4 .                | F4 G4 . G4 .... G4 A4 . A4 ....                | D5 E5 . E5 . D5 E5 ........ _ | returnGlobal e]
+block Gwave :  [setInst(2)            F4 . F4 .. F4 F4 . G4 . G4 . G3 . G3 . | G#4 . G#4 ... G#4 . A#4 . A#4 . G3 G3 . G3| setRep(7) setRet C4 . C5 . condReturn                            | setRep(7) setRet A#3 . A#4 . condReturn setRep(3) setRet A3 . A4 . condReturn                     | setRep(1) setRet D3 . D4 . condReturn setRep(1) setRet E3 . E4 . condReturn setRep(3) setRet F3 . F4 . condReturn | setRep(3) setRet G3 . G4 . condReturn setRep(3) setRet C4 . C5 . condReturn | Eb3 . Eb4 . Eb3 . Eb4 Eb4 F3 . F4 . F3 . F4 F4 | C4 C4 . C4 . C4 C4 ........ _ | returnGlobal e]
 end
