@@ -18,11 +18,12 @@ let audioParsed = Parser.start (Lexer.read) lexbuf;;
 Printf.printf "Checking validity ...\n";;
 let Audio(instruments, songs, blocks) = audioParsed in
 check_songs_pointers songs blocks;
-let testBlockSizes = check_blocks_size blocks in
-if not testBlockSizes then failwith "there were errors in file";
 
 (*compression pass*)
 let audioCompressed = compress_audio audioParsed in
+let Audio(instruments, songs, blocks) = audioCompressed in
+let testBlockSizes = check_blocks_size blocks in
+if not testBlockSizes then failwith "there were errors in file";
 
 (* output rgbds file *)
 

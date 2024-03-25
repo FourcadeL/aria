@@ -27,7 +27,7 @@ let get_note_value note =
 let get_instruction_value instruction =
   match instruction with
   |PlayNote(n) -> get_note_value n
-  |PlayEmpty -> 0b01010100
+  |PlayEmpty -> 0b01011111
   |VolumeSet(v) -> 0b01100000 + v
   |InstrumentSet(i) -> 0b01110000 + i
   |Wait(d) -> 0b11000000 + d
