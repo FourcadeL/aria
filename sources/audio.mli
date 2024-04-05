@@ -1,7 +1,3 @@
-(*identifier used for block and instrument declaration*)
-type identifier =
-|Id of string
-
 (*octave type - denote an octave number*)
 type octave =
 |Oct of int
@@ -27,7 +23,7 @@ type note =
 
 (*------------- Instrument type ---------------*)
 type instrument =
-|Instrument of (identifier * int * int * int * int)
+|Instrument of (string * int * int * int * int)
 
 (*------------- Song and instructions type ---------------*)
 type instruction =
@@ -37,8 +33,8 @@ type instruction =
 |InstrumentSet of int
 |Wait of int
 |RepeatCounterSet of int
-|CallBlock of identifier
-|JumpBlock of identifier
+|CallBlock of string
+|JumpBlock of string
 |ResetStack
 |EndBlock
 |ConditionnalReturnTrack
@@ -49,13 +45,13 @@ type instruction =
 |SetEndState
 
 type channel =
-|Channel of identifier
+|Channel of string
 
 type block =
-|Block of (identifier * (instruction list))
+|Block of (string * (instruction list))
 
 type song =
-|Song of (identifier * channel * channel * channel * channel)
+|Song of (string * channel * channel * channel * channel)
 
 
 
@@ -72,6 +68,8 @@ Audio of (instrument list) * (song list) * (block list)
 (*---------------------------------------------------------------*)
 
 val basenote_of_string : string -> baseNote
+val get_note_value : note -> int
+val transpose_note : note -> int -> note
 
 (*---------------------------------------------------------------*)
 (*--------------------   string  function   ---------------------*)

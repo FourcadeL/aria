@@ -31,9 +31,9 @@ $(SRCDIR)/parser.cmi: $(SRCDIR)/parser.mli $(SRCDIR)/audio.cmo
 $(SRCDIR)/test_parser.cmo : $(SRCDIR)/parser.cmi $(SRCDIR)/lexer.cmo
 
 test_parser: $(SRCDIR)/audio.cmo $(SRCDIR)/parser.cmo $(SRCDIR)/lexer.cmo $(SRCDIR)/test_parser.cmo
-	ocamlc -o $@ $^
+	@ocamlc -o $@ $^
+	@clean
 
-test_parser: $(BUILDDIR)/test_parser
 
 clean:
 	-rm lexer.ml parser.ml parser.mli *.cmo *.cmi test_parser parser.output

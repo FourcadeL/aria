@@ -3,7 +3,7 @@ open BinaryTranslator
 
 
 let check_block_size block =
-  let Block(Id(blockName), instructions) = block in
+  let Block(blockName, instructions) = block in
   let rec aux inst_list acc =
     match inst_list with
     |[] -> true
@@ -24,15 +24,15 @@ let rec check_identifier_declared identifier blocks =
             if tmpIdentifier = identifier then true else check_identifier_declared identifier t
 
 let check_song_pointers song blocks =
-  let Song(Id(songIdentifier), Channel(ch1Identifier), Channel(ch2Identifier), Channel(ch3Identifier), Channel(ch4Identifier)) = song in
+  let Song(songIdentifier, Channel(ch1Identifier), Channel(ch2Identifier), Channel(ch3Identifier), Channel(ch4Identifier)) = song in
   if not (check_identifier_declared ch1Identifier blocks) then
-    let Id(tmpString) = ch1Identifier in Printf.printf "identifier [%s] in song [%s] is not defined\n" tmpString songIdentifier;
+    Printf.printf "identifier [%s] in song [%s] is not defined\n" ch1Identifier songIdentifier;
   if not (check_identifier_declared ch2Identifier blocks) then
-    let Id(tmpString) = ch2Identifier in Printf.printf "identifier [%s] in song [%s] is not defined\n" tmpString songIdentifier;
+    Printf.printf "identifier [%s] in song [%s] is not defined\n" ch2Identifier songIdentifier;
   if not (check_identifier_declared ch3Identifier blocks) then
-    let Id(tmpString) = ch3Identifier in Printf.printf "identifier [%s] in song [%s] is not defined\n" tmpString songIdentifier;
+    Printf.printf "identifier [%s] in song [%s] is not defined\n" ch3Identifier songIdentifier;
   if not (check_identifier_declared ch4Identifier blocks) then
-    let Id(tmpString) = ch4Identifier in Printf.printf "identifier [%s] in song [%s] is not defined\n" tmpString songIdentifier;;
+    Printf.printf "identifier [%s] in song [%s] is not defined\n" ch4Identifier songIdentifier;;
 
 let rec check_songs_pointers songs blocks =
   match songs with

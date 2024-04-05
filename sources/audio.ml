@@ -1,6 +1,5 @@
-(*identifier used for block and instrument declaration*)
-type identifier =
-|Id of string
+exception UndefinedNote
+
 
 (*octave type - denote an octave number*)
 type octave =
@@ -27,7 +26,7 @@ type note =
 
 (*------------- Instrument type ---------------*)
 type instrument =
-|Instrument of (identifier * int * int * int * int)
+|Instrument of (string * int * int * int * int)
 
 (*------------- Song and instructions type ---------------*)
 type instruction =
@@ -37,8 +36,8 @@ type instruction =
 |InstrumentSet of int
 |Wait of int
 |RepeatCounterSet of int
-|CallBlock of identifier
-|JumpBlock of identifier
+|CallBlock of string
+|JumpBlock of string
 |ResetStack
 |EndBlock
 |ConditionnalReturnTrack
@@ -49,13 +48,13 @@ type instruction =
 |SetEndState
 
 type channel =
-|Channel of identifier
+|Channel of string
 
 type block =
-|Block of (identifier * (instruction list))
+|Block of (string * (instruction list))
 
 type song =
-|Song of (identifier * channel * channel * channel * channel)
+|Song of (string * channel * channel * channel * channel)
 
 
 
@@ -104,8 +103,8 @@ let instruction_string instruction =
   |InstrumentSet(i) -> "Set Instrument(" ^ string_of_int i ^ ")"
   |Wait(n) -> "Set wait (" ^ string_of_int n ^ ")" ^ (wait_string n "")
   |RepeatCounterSet(n) -> "RepeatSet(" ^ (string_of_int n) ^ ")"
-  |CallBlock(Id(id)) -> "Call(" ^ id ^ ")"
-  |JumpBlock(Id(id)) -> "Jump(" ^ id ^ ")"
+  |CallBlock(id) -> "Call(" ^ id ^ ")"
+  |JumpBlock(id) -> "Jump(" ^ id ^ ")"
   |ResetStack -> "Clear"
   |EndBlock -> "End"
   |ConditionnalReturnTrack -> "TrackRepeatCond"
@@ -139,6 +138,52 @@ match str with
 |"B" -> B
 |_ -> failwith "unknown note match"
 
+let get_basenote_offset basenote =
+  match basenote with
+  | C -> 0
+  | Cd -> 1
+  | D -> 2
+  | Dd -> 3
+  | E -> 4
+  | F  -> 5
+  | Fd -> 6
+  | G -> 7
+  | Gd -> 8
+  | A -> 9
+  | Ad -> 10
+  | B -> 11
+
+  let get_basenote_from_offset offset =
+    match offset with
+    | 0 -> C
+    | 1 -> Cd
+    | 2 -> D
+    | 3 -> Dd
+    | 4 -> E
+    | 5 -> F
+    | 6 -> Fd
+    | 7 -> G
+    | 8 -> Gd
+    | 9 -> A
+    | 10 -> Ad
+    | 11 -> B
+    | _ -> raise UndefinedNote
+
+let get_note_value note =
+  let Note(baseNote, Oct(octave)) = note in
+  if octave >= 2 && octave <= 9 then
+    12 * (octave - 2) + get_basenote_offset baseNote
+  else
+    raise UndefinedNote 
+
+let get_note_from_value v =
+  let base = v mod 12 in
+  let oct = (v / 12) + 2 in
+  Note(get_basenote_from_offset base, Oct(oct))
+
+let transpose_note note offset =
+  get_note_from_value ((get_note_value note) + offset)
+
 (*---------------------------------------------------------------*)
 (*--------------------   display function   ---------------------*)
 (*---------------------------------------------------------------*)
@@ -146,13 +191,13 @@ let instruction_display i =
   Printf.printf " %s " (instruction_string i)
 
 let block_display b =
-  let Block(Id(id), instructions) = b in
+  let Block(id, instructions) = b in
   Printf.printf "Block : %s\n\t" id;
   List.iter instruction_display instructions;
   Printf.printf "\n";;
 
 let song_display s =
-  let Song(blocks, Channel(Id(ch1)), Channel(Id(ch2)), Channel(Id(ch3)), Channel(Id(ch4))) = s in
+  let Song(blocks, Channel(ch1), Channel(ch2), Channel(ch3), Channel(ch4)) = s in
   Printf.printf "Song:\n\t|CH1 : %s\n\t|CH2 : %s\n\t|CH3 : %s\n\t|CH4 : %s\n" ch1 ch2 ch3 ch4;;
 
 let disp_audio a =

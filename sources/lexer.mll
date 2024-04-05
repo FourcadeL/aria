@@ -17,6 +17,8 @@ rule read = parse
 | ')' {END_PAR}
 | '[' {START_BRAC}
 | ']' {END_BRAC}
+| '{' {START_CBRAC}
+| '}' {END_CBRAC}
 | ':' {COLON}
 | ';' {SEMI_COLON}
 | '.' {DOT}
@@ -34,22 +36,17 @@ rule read = parse
 |"ch3" {CHANNEL3}
 |"ch4" {CHANNEL4}
 
+(*Block AST  keywords*)
+|"repeat"         {BLKAST_REPEAT}
+|"transpose"      {BLKAST_TRANSPOSE}
+|"withVolume"     {BLKAST_WITHVOLUME}
+|"withInstrument" {BLKAST_WITHINSTRUMENT}
+|"loop"           {BLKAST_LOOP}
+|"call"           {BLKAST_CALL}
+|"jump"           {BLKAST_JUMP}
+
 (* Instruction contrôl *)
 |"_" {PLAYEMPTY}
-|"wait" {WAIT}
-|"setVol" {SETVOLUME}
-|"setInst" {SETINSTRUMENT}
-|"setRep" {REPEATCOUNTERSET}
-|"call" {CALLBLOCK}
-|"jump" {JUMPBLOCK}
-|"resetCall" {RESETSTACK}
-|"e" {ENDBLOCK}
-|"condReturn" {CONDITIONNALRETURNTRACK}
-|"return" {RETURNTRACK}
-|"condReturnGlobal" {CONDITIONNALGLOBALRETURNTRACK}
-|"returnGlobal" {GLOBALRETURNTRACK}
-|"setRet" {SETRETURNTRACK}
-|"setEnd" {SETENDSTATE}
 
 (*base note*)
 |['A'-'G']['#''b']? {BASENOTE (Lexing.lexeme lexbuf)}
@@ -57,7 +54,7 @@ rule read = parse
 (* base types *)
 |['a'-'z''A'-'Z']['a'-'z''A'-'Z']['a'-'z''A'-'Z']['0'-'9''a'-'z''A'-'Z']* {IDENTIFIER (Lexing.lexeme lexbuf)}
 (*the quickfix for identifier and basenote confusion is that identifier are now required to be at least 3 non-alphabetic characters longs*)
-|['0'-'9']+ {INT (int_of_string (Lexing.lexeme lexbuf))}
+|'-'?['0'-'9']+ {INT (int_of_string (Lexing.lexeme lexbuf))}
 
 (* read error *)
 | _ {let start_pos = Parsing.rhs_start_pos 1 in
@@ -66,6 +63,9 @@ rule read = parse
         (Lexing.lexeme lexbuf)
         start_pos.pos_lnum (start_pos.pos_cnum - start_pos.pos_bol) (end_pos.pos_cnum - end_pos.pos_bol);
         failwith ("unexpected character")}
+
+
+
 
 
 and comment = parse

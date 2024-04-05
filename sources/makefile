@@ -21,31 +21,37 @@ parser.ml: parser.mly
 lexer.ml: lexer.mll
 	ocamllex $<
 
-audio.cmo: audio.cmi audio.ml
+audio.cmo: audio.cmi audio.ml ast.cmi
+
+ast.cmo: ast.cmi ast.ml audio.cmi
 
 checker.cmo: checker.cmi checker.ml audio.cmi binaryTranslator.cmi
 
 binaryTranslator.cmo: binaryTranslator.cmi binaryTranslator.ml audio.cmi
 
+compiler.cmo: compiler.cmi compiler.ml audio.cmi ast.cmi
+
 compress.cmo: compress.cmi compress.ml audio.cmi
 
 rgbdsFileGenerator.cmo: rgbdsFileGenerator.cmi rgbdsFileGenerator.ml binaryTranslator.cmi audio.cmi
 
-parser.cmo: audio.cmi parser.cmi
+parser.cmo: audio.cmi ast.cmi parser.cmi
 
-parser.cmi: parser.mli audio.cmo
+parser.cmi: parser.mli audio.cmo ast.cmo
 	ocamlc -c $<
 
 test_parser.cmo : parser.cmi lexer.cmo test_parser.ml
 
-test_parser: audio.cmo parser.cmo lexer.cmo test_parser.cmo
+test_parser: audio.cmo ast.cmo parser.cmo lexer.cmo test_parser.cmo
 	ocamlc -o $@ $^
+	@make clean
 
-main: audio.cmo parser.cmo lexer.cmo binaryTranslator.cmo checker.cmo compress.cmo rgbdsFileGenerator.cmo main.cmo
+main: audio.cmo parser.cmo lexer.cmo binaryTranslator.cmo checker.cmo compress.cmo compiler.cmo ast.cmo rgbdsFileGenerator.cmo main.cmo
 	ocamlc -o $@ $^
+	@make clean
 
 clean:
-	-rm lexer.ml parser.ml parser.mli *.cmo *.cmi test_parser parser.output main
+	-rm lexer.ml parser.ml parser.mli *.cmo *.cmi parser.output
 
 
 

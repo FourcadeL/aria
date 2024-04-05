@@ -9,8 +9,8 @@ let write_instruction outChannel instruction =
   let v = get_instruction_value instruction in
   let _ = Printf.fprintf outChannel "\tDB $%0*X ; %s \n" 2 v (instruction_string instruction) in
   match instruction with
-  |CallBlock(Id(id)) -> Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s)\n" id id (*special cases of 2 bytes instructions*)
-  |JumpBlock(Id(id)) -> Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s)\n" id id
+  |CallBlock(id) -> Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s)\n" id id (*special cases of 2 bytes instructions*)
+  |JumpBlock(id) -> Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s)\n" id id
   |_ -> ()
 
 
@@ -22,7 +22,7 @@ let rec write_instruction_list outChannel instruction_list =
 
 let write_block block outChannel sectionCounter =
   Printf.fprintf outChannel "\tSECTION \"songblock_%s\", ROMX\n" (string_of_int sectionCounter);
-  let Block(Id(id), instruction_list) = block in
+  let Block(id, instruction_list) = block in
   Printf.fprintf outChannel "%s:\n" id;
   write_instruction_list outChannel instruction_list;
   Printf.fprintf outChannel "\n";;
@@ -49,7 +49,7 @@ let write_songs_channel_pointers outChannel songs =
   let rec aux song_list counter =
     match song_list with
     |[] -> ()
-    |Song(_, Channel(Id(id1)), Channel(Id(id2)), Channel(Id(id3)), Channel(Id(id4)))::q ->
+    |Song(_, Channel(id1), Channel(id2), Channel(id3), Channel(id4))::q ->
       Printf.fprintf outChannel "song_%s::\n" (string_of_int counter);
       Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s), LOW(%s), HIGH(%s), LOW(%s), HIGH(%s), LOW(%s), HIGH(%s)\n" id1 id1 id2 id2 id3 id3 id4 id4;
       aux q (counter + 1);
