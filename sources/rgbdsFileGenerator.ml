@@ -29,8 +29,12 @@ let write_block block outChannel sectionCounter =
 
 
 let write_instrument outChannel instr = 
-  let Instrument(_, v1, v2, v3, v4) = instr in
-  Printf.fprintf outChannel "\t DB $%0*X, $%0*X, $%0*X, $%0*X\n" 2 v1 2 v2 2 v3 2 v4
+  let Instrument(name, v1, v2, v3, v4) = instr in
+  Printf.fprintf outChannel "%s:\n\tDB $%0*X, $%0*X, $%0*X, $%0*X\n" name 2 v1 2 v2 2 v3 2 v4
+
+let write_instrument_pointer outChannel instr =
+  let Instrument(name, _, _, _, _) = instr in
+  Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s)\n" name name
 
 (*---------------------------------------------------------------*)
 (*-----------------Local file writing functions------------------*)
@@ -42,15 +46,17 @@ let write_file_header outChannel =
 
 
 let write_instruments outChannel instrs =
-  Printf.fprintf outChannel "\tSECTION \"instruments sheet\", ROMX, ALIGN[6]\n_instruments_sheet::\n";
+  Printf.fprintf outChannel "\tSECTION \"instruments lookup\", ROMX, ALIGN[6]\n_instruments_lookup::\n";
+  List.iter (write_instrument_pointer outChannel) instrs;
+  Printf.fprintf outChannel "\n\tSECTION \"instruments\", ROMX\n";
   List.iter (write_instrument outChannel) instrs
 
 let write_songs_channel_pointers outChannel songs =
   let rec aux song_list counter =
     match song_list with
     |[] -> ()
-    |Song(_, Channel(id1), Channel(id2), Channel(id3), Channel(id4))::q ->
-      Printf.fprintf outChannel "song_%s::\n" (string_of_int counter);
+    |Song(name, Channel(id1), Channel(id2), Channel(id3), Channel(id4))::q ->
+      Printf.fprintf outChannel "song_%s_%s::\n" (string_of_int counter) name;
       Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s), LOW(%s), HIGH(%s), LOW(%s), HIGH(%s), LOW(%s), HIGH(%s)\n" id1 id1 id2 id2 id3 id3 id4 id4;
       aux q (counter + 1);
   in
