@@ -6,7 +6,7 @@ type identifier =
 
 (*Instruments*)
 type astInstrument =
-|RegisterInstrument of (int * int * int * int)
+|RegisterInstrument of (int * int * int * int * int list)
 
 type structInstrument = Instrument of (identifier * astInstrument)
 

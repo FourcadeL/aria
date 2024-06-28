@@ -48,7 +48,12 @@ start:
 /*-----------------Unit Instruments Declaration------------------*/
 /*---------------------------------------------------------------*/
 instrument:
-|INSTRUMENT identifier COLON INT COMA INT COMA INT COMA INT SEMI_COLON {Instrument($2, RegisterInstrument($4, $6, $8, $10))}
+|INSTRUMENT identifier COLON INT COMA INT COMA INT COMA INT SEMI_COLON volume_list SEMI_COLON {Instrument($2, RegisterInstrument($4, $6, $8, $10, $12))}
+
+volume_list:
+|{[]} /*nothing is read*/
+|INT {[$1]}
+|INT COMA volume_list {$1::$3}
 
 instrument_list:
 |{[]} /*nothing is read*/

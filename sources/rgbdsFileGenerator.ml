@@ -29,11 +29,18 @@ let write_block block outChannel sectionCounter =
 
 
 let write_instrument outChannel instr = 
-  let Instrument(name, v1, v2, v3, v4) = instr in
-  Printf.fprintf outChannel "%s:\n\tDB $%0*X, $%0*X, $%0*X, $%0*X\n" name 2 v1 2 v2 2 v3 2 v4
+  let rec aux_write_volumes_list l =
+    match l with
+      |[] -> Printf.fprintf outChannel "$80\n" (*ending sequence value*)
+      |h::q -> Printf.fprintf outChannel "$%0*X, " 2 (get_audio_5bitsigned_modifier_value h); aux_write_volumes_list q (*modifier value*)
+    in
+  let Instrument(name, v1, v2, v3, v4, vlist) = instr in
+  Printf.fprintf outChannel "%s:\n\tDB $%0*X, $%0*X, $%0*X, $%0*X\n" name 2 v1 2 v2 2 v3 2 v4;
+  Printf.fprintf outChannel "\tDB ";
+  aux_write_volumes_list vlist
 
 let write_instrument_pointer outChannel instr =
-  let Instrument(name, _, _, _, _) = instr in
+  let Instrument(name, _, _, _, _, _) = instr in
   Printf.fprintf outChannel "\tDB LOW(%s), HIGH(%s)\n" name name
 
 (*---------------------------------------------------------------*)
@@ -61,6 +68,7 @@ let write_songs_channel_pointers outChannel songs =
       aux q (counter + 1);
   in
   Printf.fprintf outChannel "\tSECTION \"songs lookup\", ROMX\n";
+  Printf.fprintf outChannel "songs_start::\n";
   aux songs 0;;
 
 let write_blocks outChannel blocks =
@@ -93,15 +101,29 @@ let output_rgbds_file audio fileName =
 
 HEADER
 
+INSTRUMENT LOOKUP SECTION :
+SECTION "instruments lookup", ROMX, ALIGN[6] (aligned as required by engine)
+_instruments_lookup::
+	DB LOW(inst_1), HIGH(inst_1)
+	DB LOW(inst_2), HIGH(inst_2)
+	DB LOW(inst_3), HIGH(inst_3)
+	DB LOW(inst_4), HIGH(inst_4)
+
 INSTRUMENT SECTION :
-  SECTION "instruments sheet", ROMX, ALIGN[6] (aligned as required by engine)
-_instruments_sheet:
-  DB $XX, $XX, $XX, $XX
-  DB $XX, $XX, $XX, $XX
-  DB $XX, $XX, $XX, $XX
-  DB $XX, $XX, $XX, $XX
-  DB $XX, $XX, $XX, $XX
-  DB $XX, $XX, $XX, $XX <- instruments values
+SECTION "instruments", ROMX (no need to align)
+inst_1:
+	DB $XX, $XX, $XX, $XX <- instruments values
+	DB $XX, $XX, $XX, ...,  %10000000 (volume modifiers with terminaison)
+inst_2:
+	DB $XX, $XX, $XX, $XX
+	DB $XX, $XX, $XX, ...,  %10000000 (volume modifiers with terminaison)
+inst_3:
+	DB $XX, $XX, $XX, $XX
+	DB $XX, $XX, $XX, ...,  %10000000 (volume modifiers with terminaison)
+inst_4:
+	DB $XX, $XX, $XX, $XX
+	DB $XX, $XX, $XX, ...,  %10000000 (volume modifiers with terminaison)
+
 
   SECTION "songs", ROMX (no need to align)
 _song_name:

@@ -27,3 +27,40 @@ let get_instruction_byte_size instruction =
   |CallBlock(_) -> 2
   |JumpBlock(_) -> 2
   |_ -> 1
+
+
+let get_audio_5bitsigned_modifier_value modifier =
+  match modifier with
+  |0 -> 0x00
+  |1 -> 0x01
+  |2 -> 0x02
+  |3 -> 0x03
+  |4 -> 0x04
+  |5 -> 0x05
+  |6 -> 0x06
+  |7 -> 0x07
+  |8 -> 0x08
+  |9 -> 0x09
+  |10 -> 0x0A
+  |11 -> 0x0B
+  |12 -> 0x0C
+  |13 -> 0x0D
+  |14 -> 0x0E
+  |15 -> 0x0F
+  |(-1) -> 0x1F
+  |(-2) -> 0x1E
+  |(-3) -> 0x1D
+  |(-4) -> 0x1C
+  |(-5) -> 0x1B
+  |(-6) -> 0x1A
+  |(-7) -> 0x19
+  |(-8) -> 0x18
+  |(-9) -> 0x17
+  |(-10) -> 0x16
+  |(-11) -> 0x15
+  |(-12) -> 0x14
+  |(-13) -> 0x13
+  |(-14) -> 0x12
+  |(-15) -> 0x11
+  |(-16) -> 0x10
+  |_ -> 0x00

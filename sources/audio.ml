@@ -26,7 +26,7 @@ type note =
 
 (*------------- Instrument type ---------------*)
 type instrument =
-|Instrument of (string * int * int * int * int)
+|Instrument of (string * int * int * int * int * int list)
 
 (*------------- Song and instructions type ---------------*)
 type instruction =

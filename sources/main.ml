@@ -22,7 +22,7 @@ let instrument_list_from_ast globalAst =
   let rec aux currInstrus =
     match currInstrus with
     |[] -> []
-    |Instrument(Id(id), RegisterInstrument(r1, r2, r3, r4))::q -> Audio.Instrument(id, r1, r2, r3, r4)::aux q
+    |Instrument(Id(id), RegisterInstrument(r1, r2, r3, r4, volVals))::q -> Audio.Instrument(id, r1, r2, r3, r4, volVals)::aux q
   in
   aux instruments
 
