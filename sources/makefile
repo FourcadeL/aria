@@ -46,7 +46,7 @@ test_parser: audio.cmo ast.cmo parser.cmo lexer.cmo test_parser.cmo
 	ocamlc -o $@ $^
 	@make clean
 
-main: audio.cmo parser.cmo lexer.cmo binaryTranslator.cmo checker.cmo compress.cmo compiler.cmo ast.cmo rgbdsFileGenerator.cmo main.cmo
+aria: audio.cmo parser.cmo lexer.cmo binaryTranslator.cmo checker.cmo compress.cmo compiler.cmo ast.cmo rgbdsFileGenerator.cmo main.cmo
 	ocamlc -o $@ $^
 	# @make clean
 
@@ -55,5 +55,5 @@ clean:
 
 
 
-usage:
-	@echo "make \"test_parser\" for tool compiling or make \"main\""
+usage: aria
+	@echo "make \"test_parser\" for tool compiling test"
