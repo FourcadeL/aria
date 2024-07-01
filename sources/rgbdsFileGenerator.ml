@@ -84,7 +84,8 @@ let write_blocks outChannel blocks =
 (*---------------------------------------------------------------*)
 
 let output_rgbds_file audio fileName =
-  let outChannel = open_out (fileName^".asm") in
+  (* let outChannel = open_out (fileName^".asm") in *)
+  let outChannel = open_out fileName in
   let Audio(instruments, songs, blocks) = audio in
   write_file_header outChannel; (*writes import definitions*)
   Printf.fprintf outChannel "\n\n";
