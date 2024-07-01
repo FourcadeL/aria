@@ -8,8 +8,6 @@ open Compress
 
 
 
-
-
 (* -------------------------------------------------------------------------------- *)
 (* ------------------------- Main actions functions ------------------------------- *)
 (* -------------------------------------------------------------------------------- *)
@@ -45,31 +43,67 @@ let block_list_from_ast globalAst =
   in
   aux (blocks)
 
+
+
+
+
 (* main actions *)
 
-(* small parsing (i.e. no step by step error checking) *)
+(* arguments parssing *)
+let program_name = "aria"
+let program_version = "0.2"
+let usage_msg = Printf.sprintf "%s - version %s\n usage : [-verbose] -f <file1> [-o <output>]" program_name program_version
+let verbose = ref false
+let input_file = ref ""
+let output_file = ref ""
 
-let _ = Printf.printf "Parsing of input file ...\n";;
-let lexbuf = Lexing.from_channel stdin;;
-let parsed = Parser.start (Lexer.read) lexbuf;;
+let speclist =
+  [("-verbose", Arg.Set verbose, "Output debug information");
+  ("-f", Arg.Set_string input_file, "Set input file name");
+  ("-o", Arg.Set_string output_file, "Set output file name")]
 
-(* translation (still weak) of Ast into audio structures*)
-let instruments = instrument_list_from_ast parsed;;
-let songs = song_list_from_ast parsed;;
-let blocks = block_list_from_ast parsed;;
+(** parse_args function *)
+let parse_cmdline =
+  begin
+    Arg.parse speclist print_endline usage_msg;
+    try
+      if !input_file = "" then
+        raise (Arg.Bad ("missing argument: no input file name given"));
+      if !output_file = "" then
+        output_file := "out";
+    with
+    | Arg.Bad msg ->
+       Printf.eprintf "%s: %s\n" Sys.argv.(0) msg; Printf.eprintf "%s\n" usage_msg; exit 1;
+  end
 
 
-(* quick validity checks *)
-Printf.printf "Checking validity ...\n";;
-check_songs_pointers songs blocks;
 
-(*compression pass*)
-let audioCompressed = compress_audio (Audio(instruments, songs, blocks)) in
-let Audio(instruments, songs, blocks) = audioCompressed in
-let testBlockSizes = check_blocks_size blocks in
-if not testBlockSizes then failwith "there were errors in file";
+(* Main functionality here *)
+let () =
+  begin
+    (* parsing of arguments *)
+    parse_cmdline;
+    print_endline "Running the rest of the program... with:";
+    Printf.printf " verbosity = %b\n" !verbose;
+    Printf.printf " input_file = %s\n" !input_file;
+    Printf.printf " output_file = %s\n" !output_file;
 
-(* output rgbds file *)
+    (*AST creation from file*)
+    let input_channel = open_in !input_file in
+    let lexbuf = Lexing.from_channel input_channel in
+    let parsed = Parser.start (Lexer.read) lexbuf in
 
-Printf.printf "Outputin rgbds file ...\n";
-output_rgbds_file audioCompressed "test"
+    (*weak translation of single ast into audio structures*)
+    (*TO BE CHANGED*)
+    let instruments = instrument_list_from_ast parsed and
+    songs = song_list_from_ast parsed  and
+    blocks = block_list_from_ast parsed in
+
+    (*compression pass without checks*)
+    let Audio(instruments, songs, blocks) = compress_audio (Audio(instruments, songs, blocks)) in
+    if not (check_blocks_size blocks) then failwith "there were errors in file";
+
+    output_rgbds_file (Audio(instruments, songs, blocks)) !output_file;
+
+    print_endline "Done"
+  end

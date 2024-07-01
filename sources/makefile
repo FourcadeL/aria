@@ -48,7 +48,7 @@ test_parser: audio.cmo ast.cmo parser.cmo lexer.cmo test_parser.cmo
 
 main: audio.cmo parser.cmo lexer.cmo binaryTranslator.cmo checker.cmo compress.cmo compiler.cmo ast.cmo rgbdsFileGenerator.cmo main.cmo
 	ocamlc -o $@ $^
-	@make clean
+	# @make clean
 
 clean:
 	-rm lexer.ml parser.ml parser.mli *.cmo *.cmi parser.output
