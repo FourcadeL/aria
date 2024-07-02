@@ -20,7 +20,7 @@ let instrument_list_from_ast globalAst =
   let rec aux currInstrus =
     match currInstrus with
     |[] -> []
-    |Instrument(Id(id), RegisterInstrument(r1, r2, r3, r4, volVals))::q -> Audio.Instrument(id, r1, r2, r3, r4, volVals)::aux q
+    |h::q -> (astStructInstrument_to_audioInstrument h)::aux q
   in
   aux instruments
 
@@ -51,7 +51,7 @@ let block_list_from_ast globalAst =
 
 (* arguments parssing *)
 let program_name = "aria"
-let program_version = "0.2"
+let program_version = "0.3"
 let usage_msg = Printf.sprintf "%s - version %s\n usage : [-verbose] -f <file1> [-o <output>]" program_name program_version
 let verbose = ref false
 let input_file = ref ""

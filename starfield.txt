@@ -6,7 +6,7 @@ instrument base1 :
 instrument base2 : 
 0, 192, 241, 192; 0;
 instrument base3 : 
-0, 16, 32, 128; 0, 2;% main wave 
+0, 16, 32, 128; 0, 0, 0, 0, 0, 0, 2;% main wave 
 instrument noise :
 0, 0, 240, 192; 0;%main noise
 

@@ -31,8 +31,9 @@ let write_block block outChannel sectionCounter =
 let write_instrument outChannel instr = 
   let rec aux_write_volumes_list l =
     match l with
-      |[] -> Printf.fprintf outChannel "$80\n" (*ending sequence value*)
-      |h::q -> Printf.fprintf outChannel "$%0*X, " 2 (get_audio_5bitsigned_modifier_value h); aux_write_volumes_list q (*modifier value*)
+      |[] -> failwith "error with volume envelope list : should not be empty"
+      |[h] -> Printf.fprintf outChannel "$%0*X\n" 2 h (*ending sequence value*)
+      |h::q -> Printf.fprintf outChannel "$%0*X, " 2 h; aux_write_volumes_list q (*modifier value*)
     in
   let Instrument(name, v1, v2, v3, v4, vlist) = instr in
   Printf.fprintf outChannel "%s:\n\tDB $%0*X, $%0*X, $%0*X, $%0*X\n" name 2 v1 2 v2 2 v3 2 v4;

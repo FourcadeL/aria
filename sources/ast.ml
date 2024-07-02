@@ -6,6 +6,8 @@ type identifier =
 |Id of string
 
 (*Instruments*)
+type astVolumeEnvelope = int list
+
 type astInstrument =
 |RegisterInstrument of (int * int * int * int * int list)
 

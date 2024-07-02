@@ -3,6 +3,7 @@
 
 open Audio
 open Ast
+open BinaryTranslator
 
 
 type trackerState = {
@@ -37,3 +38,24 @@ let astStructBlock_to_audioBlock astStructBlock =
   let Block(Id(id), ast) = astStructBlock in
   let initialState = {currentInstrument = 0; currentVolume = 10; currentTranspose = 0} in
   Audio.Block(id, (auxTranslate [] ast initialState)@[EndBlock])
+
+
+
+(* Translate an ast instrument structure into an audio structure
+  - keeps register values as-is
+  - compile volume enveloppe instruction to encode repetition
+    -reminder : %10000000 -> sequence terminaison string (added as last value of the list)
+                %000xxxxx -> modifier value 5 bit modifier for volume (signed value)
+                %01xxxxxx -> wait instruction : will wait xxxxxx update tick before next volume update (added as 8bit value, this function compile repetition instructions)
+                *)
+let astStructInstrument_to_audioInstrument astStructInstrument =
+  let rec aux_volumeEnvelopeList_to_volumeInstructionList volList lastValue lastValueCounter =
+    match volList with
+    |[] -> [0b10000000]
+    |h::q when h==lastValue -> aux_volumeEnvelopeList_to_volumeInstructionList q lastValue (lastValueCounter + 1)
+    |h::q when lastValueCounter > 0 -> (0b01000000 + lastValueCounter)::(get_audio_5bitsigned_modifier_value h)::(aux_volumeEnvelopeList_to_volumeInstructionList q h 0)
+    |h::q -> (get_audio_5bitsigned_modifier_value h)::(aux_volumeEnvelopeList_to_volumeInstructionList q h 0)
+  in
+  let Instrument(Id(id), RegisterInstrument(r1, r2, r3, r4, vl)) = astStructInstrument in
+  Audio.Instrument(id, r1, r2, r3, r4, aux_volumeEnvelopeList_to_volumeInstructionList vl 99 0)
+
