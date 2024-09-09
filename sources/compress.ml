@@ -83,12 +83,64 @@ let remove_duplicate_waits instructionList =
   aux instructionList (-1)
 
 
+(*Remove superfluous instrument assigment that can arise from macro usage
+Example : X X X InstrumentSet(3) InstrumentSet(5) X X X
+(here instrument 3 can be removed)*)
+let remove_superfluous_instruments_assignments instructionList =
+  let rec find_note_before_next_instrument_assign tailingList =
+    match tailingList with
+    |PlayNote(_)::q -> true
+    |InstrumentSet(_)::q -> false
+    |[] -> false
+    |CallBlock(_)::q -> true (*callBlocks can contain notes*)
+    |JumpBlock(_)::q -> true (*jumpBlocks can contain notes*)
+    |_::q -> find_note_before_next_instrument_assign q
+  in
+  let rec aux tailingList previousInstrumentValue =
+    match tailingList with
+    |[] -> []
+    |InstrumentSet(i)::q -> if (previousInstrumentValue = i || not (find_note_before_next_instrument_assign q)) then
+                              (aux q previousInstrumentValue)
+                            else
+                              InstrumentSet(i)::(aux q i)
+    |CallBlock(x)::q -> CallBlock(x)::(aux q (-1))
+    |SetReturnTrack::q -> SetReturnTrack::(aux q (-1)) (*can resume with different instrument values*)
+    |h::q -> h::(aux q previousInstrumentValue)
+  in
+  aux instructionList (-1)
+
+let remove_superfluous_volume_assignments instructionList =
+  let rec find_note_before_next_volume_assign tailingList =
+    match tailingList with
+    |PlayNote(_)::q -> true
+    |VolumeSet(_)::q -> false
+    |[] -> false
+    |CallBlock(_)::q -> true (*callBlocks can contain notes*)
+    |JumpBlock(_)::q -> true (*jumpBlocks can contain notes*)
+    |_::q -> find_note_before_next_volume_assign q
+  in
+  let rec aux tailingList previousVolumeValue =
+    match tailingList with
+    |[] -> []
+    |VolumeSet(v)::q -> if (previousVolumeValue = v || not (find_note_before_next_volume_assign q)) then
+                          (aux q previousVolumeValue)
+                        else
+                          VolumeSet(v)::(aux q v)
+    |CallBlock(x)::q -> CallBlock(x)::(aux q (-1))
+    |SetReturnTrack::q -> SetReturnTrack::(aux q (-1)) (*can resume with different volume values*)
+    |h::q -> h::(aux q previousVolumeValue)
+  in
+  aux instructionList (-1)
+
+
 let compress_block block =
   let Block(id, il) = block in
   let p1 = add_zero_waits il in (*adds missing Wait(0)*)
   let p2 = merge_waits p1 in (*merge multiple consecutive waits*)
   let p3 = pass_wait_instruction p2 in (*pass waits for automaton execution style*)
-  let li = remove_duplicate_waits p3 in (*removes superfluous sets to same wait value*)
+  let p4 = remove_duplicate_waits p3 in (*removes superfluous sets to same wait value*)
+  let p5 = remove_superfluous_instruments_assignments p4 in (*removes superfluous instruments sets*)
+  let li = remove_superfluous_volume_assignments p5 in (*removes superfluous volume sets*)
   Block(id, li)
 
 
