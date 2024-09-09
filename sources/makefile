@@ -33,6 +33,8 @@ compiler.cmo: compiler.cmi compiler.ml audio.cmi ast.cmi
 
 compress.cmo: compress.cmi compress.ml audio.cmi
 
+transform.cmo: transform.cmi transform.ml ast.cmi
+
 rgbdsFileGenerator.cmo: rgbdsFileGenerator.cmi rgbdsFileGenerator.ml binaryTranslator.cmi audio.cmi
 
 parser.cmo: audio.cmi ast.cmi parser.cmi
@@ -46,7 +48,7 @@ test_parser: audio.cmo ast.cmo parser.cmo lexer.cmo test_parser.cmo
 	ocamlc -o $@ $^
 	@make clean
 
-aria: audio.cmo parser.cmo lexer.cmo binaryTranslator.cmo checker.cmo compress.cmo compiler.cmo ast.cmo rgbdsFileGenerator.cmo main.cmo
+aria: audio.cmo parser.cmo lexer.cmo binaryTranslator.cmo checker.cmo compress.cmo transform.cmo compiler.cmo ast.cmo rgbdsFileGenerator.cmo main.cmo
 	ocamlc -o $@ $^
 	# @make clean
 

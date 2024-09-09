@@ -4,6 +4,7 @@ open RgbdsFileGenerator
 open Checker
 open Compiler
 open Compress
+open Transform
 
 
 
@@ -93,6 +94,15 @@ let () =
     let lexbuf = Lexing.from_channel input_channel in
     let parsed = Parser.start (Lexer.read) lexbuf in
 
+    (*AST transformation pass*)
+    (*---------- testing------------*)
+    disp_ast parsed;
+    debug parsed;
+    Printf.printf "Et ... transformation\n\n";
+    let parsed = transform_ast parsed in
+    debug parsed;
+    (* ---------------------------- *)
+
     (*weak translation of single ast into audio structures*)
     (*TO BE CHANGED*)
     let instruments = instrument_list_from_ast parsed and
@@ -106,4 +116,5 @@ let () =
     output_rgbds_file (Audio(instruments, songs, blocks)) !output_file;
 
     print_endline "Done"
+  
   end

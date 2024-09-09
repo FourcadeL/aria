@@ -76,6 +76,7 @@ val transpose_note : note -> int -> note
 (*---------------------------------------------------------------*)
 
 val instruction_string : instruction -> string
+val note_string : note -> string
 
 
 (*---------------------------------------------------------------*)
