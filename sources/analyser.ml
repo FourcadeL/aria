@@ -95,6 +95,13 @@ let analyse_instrument_volume_range instrument state =
   in
   aux volEnv state
 
+let analyse_instruments_ammount state =
+  (* there can't be more than 16 instruments *)
+  if S.cardinal state.instrumentsIdentifiers > 16 then
+    {state with messages = {state.messages with errors = ("too many instruments (only up to 16 can be defined)")::state.messages.errors}}
+  else
+    state
+
 let analyse_instrument instrument state =
   (* test if 4 bytes are properly defined *)
   let state = analyse_instrument_test_bytes instrument state in
@@ -110,6 +117,7 @@ let analyse_instruments globalAst state =
     |[] -> state
     |h::q -> aux q (analyse_instrument h state)
   in
+  let state = analyse_instruments_ammount state in
   aux instruments state
 (* ---------------------------------------------------------------------- *)
 
@@ -135,6 +143,76 @@ let analyse_songs globalAst state =
 (* -------------------------------------------------------------------------- *)
 
 (* -------------------------------blocks Analysis---------------------------------- *)
+(* Fonction anonyme de parcours de l'ast dans laquelle je peux envoyer plusieurs autres fonctions d'analyse *)
+let ast_block_bfs astBlock appliedFunc state =
+  let rec aux ast state =
+  match ast with
+  |Seq(a1, a2) -> let transitionState = aux a1 state in
+                    aux a2 (appliedFunc (Seq(a1, a2)) transitionState)
+  |Repeat(i, a) -> appliedFunc (Repeat(i, a)) (aux a state)
+  |Transpose(i, a) -> appliedFunc (Transpose(i, a)) (aux a state)
+  |WithVolume(vol, a) -> appliedFunc (WithVolume(vol, a)) (aux a state)
+  |WithInstrument(inst, a) -> appliedFunc (WithInstrument(inst, a)) (aux a state)
+  |Loop(a) -> appliedFunc (Loop(a)) (aux a state)
+  |Call(a) -> appliedFunc (Call(a)) (aux a state)
+  |Jump(a) -> appliedFunc (Jump(a)) (aux a state)
+  |Note(n) -> appliedFunc (Note(n)) state
+  |BlankNote -> appliedFunc (BlankNote) state
+  |EmptyPulse -> appliedFunc (EmptyPulse) state
+  |BlockId(i) -> appliedFunc (BlockId(i)) state
+  in
+  aux astBlock state
+
+let analyse_block_verify_id_defined currentBlockId astNode state =
+  match astNode with
+  |BlockId(Id(id)) -> if not (S.mem id state.blockIdentifiers) then
+    {state with messages = {state.messages with errors = ("Block id \""^id^"\" referenced in block \""^currentBlockId^"\" is not defined")::state.messages.errors}}
+  else
+    state
+  |_-> state
+
+let analyse_block_verify_call_and_jump_by_ref currentBlockId astNode state =
+  match astNode with
+  |Call(BlockId(a)) -> state
+  |Jump(BlockId(a)) -> state
+  |Call(_) -> {state with messages = {state.messages with errors = ("Call in block \""^currentBlockId^"\" is not done by block id")::state.messages.errors}}
+  |Jump(_) -> {state with messages = {state.messages with errors = ("Jump in block \""^currentBlockId^"\" is not done by block id")::state.messages.errors}}
+  |_-> state
+
+let analyse_block_verify_range currentBlockId astNode state =
+  match astNode with
+  |Repeat(nb, _) -> if nb > 31 || nb < 0 then
+    {state with messages = {state.messages with errors = ("bad repeat counter in block \""^currentBlockId^"\" (cannot exceed 31)")::state.messages.errors}}
+  else
+    state
+  |WithVolume(vol, _) -> if vol > 15 || vol < 0 then
+    {state with messages = {state.messages with errors = ("bad volume value in block \""^currentBlockId^"\" (cannot exceed 15)")::state.messages.errors}}
+  else
+    state
+  |WithInstrument(inst, _) -> if inst > 15 || inst < 0 then
+    {state with messages = {state.messages with errors = ("bad instrument index in blick \""^currentBlockId^"\" (cannot exceed 15)")::state.messages.errors}}
+  else
+    state
+  |_-> state
+
+let analyse_block block state =
+  let Block(Id(id), astB) = block in
+  (* test call pointers are defined *)
+  let state = ast_block_bfs astB (analyse_block_verify_id_defined id) state in
+  (* test call, and jumps are done only by reference *)
+  let state = ast_block_bfs astB (analyse_block_verify_call_and_jump_by_ref id) state in
+  (* test repeat counters, volume and instruments are in range *)
+  let state = ast_block_bfs astB (analyse_block_verify_range id) state in
+  state
+
+let analyse_blocks globalAst state =
+  let Ast(_, _, blocks) = globalAst in
+  let rec aux blocks state =
+    match blocks with
+    |[] -> state
+    |h::q -> aux q (analyse_block h state)
+  in
+  aux blocks state
 (* -------------------------------------------------------------------------------- *)
 
 
@@ -154,6 +232,7 @@ let analyser_check globalAst =
   (* Song analysis *)
   let state = analyse_songs globalAst state in
   (* Blocks analysis *)
+  let state = analyse_blocks globalAst state in
     (* display errors *)
   List.iter (Printf.eprintf "ERROR : %s\n") state.messages.errors;
     (* display warnings *)
