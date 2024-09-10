@@ -63,7 +63,57 @@ let get_identifiers globalAst state =
   get_block_identifiers globalAst p2
 (* ----------------------------------------------------- *)
 
-(* --------------------------------analyse songs----------------------------- *)
+(* ---------------------instrument analysis------------------------------ *)
+let analyse_instrument_test_bytes instrument state =
+  let Instrument(Id(instrumentId), RegisterInstrument(b1, b2, b3, b4, _)) = instrument in
+  let aux byteLabel byteValue state =
+    if byteValue > 255 || byteValue < 0 then
+      {state with messages = {state.messages with errors = ("byte "^byteLabel^" in instrument \""^instrumentId^"\" is not 8bit (should be a 0-255 value)")::state.messages.errors}}
+    else
+      state
+  in
+  aux "1" b1 (aux "2" b2 (aux "3" b3 (aux "" b4 state)))
+
+let analyse_instrument_volume_first_value instrument state =
+  let Instrument(Id(instrumentId), RegisterInstrument(_, _, _, _, volEnv)) = instrument in
+  match volEnv with
+  |[] -> {state with messages = {state.messages with errors = ("volume envelope in instrument \""^instrumentId^"\" is empty")::state.messages.errors}}
+  |h::q -> if h = 0 then
+    state
+  else
+    {state with messages = {state.messages with warnings = ("volume envelope in instrument \""^instrumentId^"\" starts with non-zero : you might want to reconfigure instrument base registers")::state.messages.warnings}}
+
+let analyse_instrument_volume_range instrument state =
+  let Instrument(Id(instrumentId), RegisterInstrument(_, _, _, _, volEnv)) = instrument in
+  let rec aux volumeValues state =
+    match volumeValues with
+    |[] -> state
+    |h::q -> if h > 15 || h < -16 then
+      aux q {state with messages = {state.messages with errors = ("volume value in instrument \""^instrumentId^"\" is not 5bit signed (should be a -16~15 value)")::state.messages.errors}}
+    else
+      aux q state
+  in
+  aux volEnv state
+
+let analyse_instrument instrument state =
+  (* test if 4 bytes are properly defined *)
+  let state = analyse_instrument_test_bytes instrument state in
+  (* test if volume envelope values are well defined (between -16 and 15) *)
+  let state = analyse_instrument_volume_range instrument state in
+  (* test if Volume envelope starts with 0 (could be an error) *)
+  analyse_instrument_volume_first_value instrument state
+
+let analyse_instruments globalAst state =
+  let Ast(instruments, _, _) = globalAst in
+  let rec aux instruments state =
+    match instruments with
+    |[] -> state
+    |h::q -> aux q (analyse_instrument h state)
+  in
+  aux instruments state
+(* ---------------------------------------------------------------------- *)
+
+(* -------------------------------- songs analysis ----------------------------- *)
 let analyse_song song state =
   let Song(Id(songId), PointersSong(Id(ch1), Id(ch2), Id(ch3), Id(ch4))) = song in
   let aux channelId state =
@@ -84,6 +134,11 @@ let analyse_songs globalAst state =
   aux songs state
 (* -------------------------------------------------------------------------- *)
 
+(* -------------------------------blocks Analysis---------------------------------- *)
+(* -------------------------------------------------------------------------------- *)
+
+
+
 
 (*---------------------------------------------------------------*)
 (*---------------------- analyser functions ---------------------*)
@@ -94,10 +149,11 @@ let analyser_check globalAst =
   let state = {messages = messages; instrumentsIdentifiers = S.empty; songIdentifiers = S.empty; blockIdentifiers = S.empty} in
   (* get identifiers and errors *)
   let state = get_identifiers globalAst state in
+  (* Instruments analysis *)
+  let state = analyse_instruments globalAst state in
   (* Song analysis *)
   let state = analyse_songs globalAst state in
   (* Blocks analysis *)
-  (* final display of analysis (and fail if errors) *)
     (* display errors *)
   List.iter (Printf.eprintf "ERROR : %s\n") state.messages.errors;
     (* display warnings *)
