@@ -5,6 +5,7 @@ open Checker
 open Compiler
 open Compress
 open Transform
+open Analyser
 
 
 
@@ -94,11 +95,13 @@ let () =
     let lexbuf = Lexing.from_channel input_channel in
     let parsed = Parser.start (Lexer.read) lexbuf in
 
+    (*AST analysis*)
+    analyser_check parsed;
+
     (*AST transformation pass*)
     (*---------- testing------------*)
-    disp_ast parsed;
+    (* disp_ast parsed; *)
     debug parsed;
-    Printf.printf "Et ... transformation\n\n";
     let parsed = transform_ast parsed in
     debug parsed;
     (* ---------------------------- *)

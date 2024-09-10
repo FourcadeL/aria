@@ -22,11 +22,6 @@ ch2 empty
 ch3 Smainwave
 ch4 empty
 
-song testNoise :
-ch1 empty
-ch2 empty
-ch3 empty
-ch4 mainNoise
 
 block testingSong : [withInstrument(0){
     loop{

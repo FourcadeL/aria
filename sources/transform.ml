@@ -135,8 +135,7 @@ let transform_ast globalAst =
   let rec aux_iterate_on_blocks currentGlobalAst blocks =
     match blocks with
     |[] -> currentGlobalAst
-    |h::q -> let Block(Id(id), astB) = h in
-              let analyseUsage = analyseBlock h globalAst in
+    |h::q -> let analyseUsage = analyseBlock h globalAst in
               if (analyseUsage.callCounter=0 && analyseUsage.anonymousCounter=0) then
                 aux_iterate_on_blocks currentGlobalAst q (*never calles, kept untoutched*)
               else

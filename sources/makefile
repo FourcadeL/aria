@@ -25,6 +25,8 @@ audio.cmo: audio.cmi audio.ml ast.cmi
 
 ast.cmo: ast.cmi ast.ml audio.cmi
 
+analyser.cmo: analyser.cmi analyser.ml ast.cmi
+
 checker.cmo: checker.cmi checker.ml audio.cmi binaryTranslator.cmi
 
 binaryTranslator.cmo: binaryTranslator.cmi binaryTranslator.ml audio.cmi
@@ -48,7 +50,7 @@ test_parser: audio.cmo ast.cmo parser.cmo lexer.cmo test_parser.cmo
 	ocamlc -o $@ $^
 	@make clean
 
-aria: audio.cmo parser.cmo lexer.cmo binaryTranslator.cmo checker.cmo compress.cmo transform.cmo compiler.cmo ast.cmo rgbdsFileGenerator.cmo main.cmo
+aria: audio.cmo parser.cmo lexer.cmo binaryTranslator.cmo checker.cmo analyser.cmo compress.cmo transform.cmo compiler.cmo ast.cmo rgbdsFileGenerator.cmo main.cmo
 	ocamlc -o $@ $^
 	# @make clean
 
