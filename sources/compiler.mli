@@ -2,6 +2,8 @@ open Audio
 open Ast
 
 
-val astStructBlock_to_audioBlock : structBlock -> block
+(*---------------------------------------------------------------*)
+(*---------------------- compiler functions ---------------------*)
+(*---------------------------------------------------------------*)
 
-val astStructInstrument_to_audioInstrument : structInstrument -> instrument
+val compile_globalAst_to_audio : globalAst -> audio

@@ -12,6 +12,10 @@ type trackerState = {
   currentTranspose : int;
 }
 
+(*---------------------------------------------------------------*)
+(*---------------------- internal functions ---------------------*)
+(*---------------------------------------------------------------*)
+
 (* the function isn't terminal recursive : to be optimized
    - Current transpose is done by shifting seen notes BUT NOTE FUNCITON CALLS
    - Loop is done only with a complete return of tracker, not partial
@@ -59,3 +63,43 @@ let astStructInstrument_to_audioInstrument astStructInstrument =
   let Instrument(Id(id), RegisterInstrument(r1, r2, r3, r4, vl)) = astStructInstrument in
   Audio.Instrument(id, r1, r2, r3, r4, aux_volumeEnvelopeList_to_volumeInstructionList vl 99 0)
 
+
+let instrument_list_from_ast globalAst =
+  let Ast(instruments, _, _) = globalAst in
+  let rec aux currInstrus =
+    match currInstrus with
+    |[] -> []
+    |h::q -> (astStructInstrument_to_audioInstrument h)::aux q
+  in
+  aux instruments
+  
+let song_list_from_ast globalAst =
+  let Ast(_, songs, _) = globalAst in
+  let rec aux currSongs =
+    match currSongs with
+    |[] -> []
+    |Song(Id(id), PointersSong(Id(idb1), Id(idb2), Id(idb3), Id(idb4)))::q ->
+      Audio.Song(id, Channel(idb1), Channel(idb2), Channel(idb3), Channel(idb4))::aux q
+  in
+  aux songs
+  
+  
+let block_list_from_ast globalAst =
+  let Ast(_, _, blocks) = globalAst in
+  let rec aux currBlocks =
+    match currBlocks with
+    |[] -> []
+    |b::q -> (astStructBlock_to_audioBlock b)::aux q
+  in
+  aux (blocks)
+
+  
+(*---------------------------------------------------------------*)
+(*---------------------- compiler functions ---------------------*)
+(*---------------------------------------------------------------*)
+
+let compile_globalAst_to_audio globalAst =
+  let instruments = instrument_list_from_ast globalAst in
+  let songs = song_list_from_ast globalAst in
+  let blocks = block_list_from_ast globalAst in
+  Audio(instruments, songs, blocks)

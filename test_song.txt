@@ -42,8 +42,6 @@ block Smain1 : [withInstrument(0){
     repeat(4){C5 Eb5 Ab5 C6}
     repeat(4){Bb4 D5 F5 Bb5}
     repeat(2){C5 D5 G5 C6} repeat(2){B4 D5 G5 B5}
-    call{SthemeA1}
-    call{SthemeB1}
     }}]
 
 block Smainwave : [withInstrument(2){withVolume(4){
