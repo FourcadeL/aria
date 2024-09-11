@@ -74,7 +74,7 @@ instruction:
                                         {Transpose($3, $6)}
 |BLKAST_WITHVOLUME START_PAR INT END_PAR START_CBRAC instruction_ast END_CBRAC
                                         {WithVolume($3, $6)}
-|BLKAST_WITHINSTRUMENT START_PAR INT END_PAR START_CBRAC instruction_ast END_CBRAC
+|BLKAST_WITHINSTRUMENT START_PAR identifier END_PAR START_CBRAC instruction_ast END_CBRAC
                                         {WithInstrument($3, $6)}
 |BLKAST_LOOP START_CBRAC instruction_ast END_CBRAC
                                         {Loop($3)}

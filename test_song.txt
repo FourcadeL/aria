@@ -23,20 +23,20 @@ ch3 Smainwave
 ch4 empty
 
 
-block testingSong : [withInstrument(0){
+block testingSong : [withInstrument(base1){
     loop{
         C3 D3 E3 anonymousClap anonymousClap C4 anonymousClap
     }
 }]
 
-block anonymousClap : [withInstrument(2) { C3 . C4 . C2 .}]
+block anonymousClap : [withInstrument(base3) { C3 . C4 . C2 .}]
 
 block anonymousTheme : [F#3 ... F4]
 
 block anonymousTheme2 : [G4.. G5... G6...]
 
 
-block Smain1 : [withInstrument(0){
+block Smain1 : [withInstrument(base1){
     loop{
     repeat(4){C5 E5 G5 C6}
     repeat(4){C5 Eb5 Ab5 C6}
@@ -44,7 +44,7 @@ block Smain1 : [withInstrument(0){
     repeat(2){C5 D5 G5 C6} repeat(2){B4 D5 G5 B5}
     }}]
 
-block Smainwave : [withInstrument(2){withVolume(4){
+block Smainwave : [withInstrument(base3){withVolume(4){
     loop{
     C3...............
     Ab2...............
@@ -66,7 +66,7 @@ block SthemeBwave : [
     repeat(4){G2 . D3 G3}
     ]
 
-block Gwave :  [withInstrument(2){loop{
+block Gwave :  [withInstrument(base3){loop{
     F4 . F4 .. F4 F4 . G4 . G4 . G3 . G3 .
     G#4 . G#4 ... G#4 . A#4 . A#4 . G3 G3 . G3
     repeat(8){C4 . C5 .}

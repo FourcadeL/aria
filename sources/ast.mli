@@ -24,7 +24,7 @@ type astBlock =
 |Repeat of int * astBlock
 |Transpose of int * astBlock
 |WithVolume of int * astBlock
-|WithInstrument of int * astBlock
+|WithInstrument of identifier * astBlock
 |Loop of astBlock
 |Call of astBlock
 |Jump of astBlock

@@ -16,11 +16,22 @@ type trackerState = {
 (*---------------------- internal functions ---------------------*)
 (*---------------------------------------------------------------*)
 
+let get_instrument_index_from_id instruments instrumentId =
+  let rec aux instrus retValue =
+    match instrus with
+    |[] -> failwith ("fatal : Can't find instrument \""^instrumentId^"\"")
+    |h::q -> let Instrument(Id(id), _) = h in
+              if id = instrumentId then retValue
+              else aux q (retValue+1)
+  in
+  aux instruments 0
+
+
 (* the function isn't terminal recursive : to be optimized
    - Current transpose is done by shifting seen notes BUT NOTE FUNCITON CALLS
    - Loop is done only with a complete return of tracker, not partial
    - since no preliminary optimization is done call and jump can't be called on ast other than blockID*)
-let astStructBlock_to_audioBlock astStructBlock =
+let astStructBlock_to_audioBlock astStructBlock instruments =
   let rec auxTranslate buffer currAst currState =
     match currAst with
     |Seq(a1, a2) -> auxTranslate (auxTranslate buffer a1 currState) a2 currState
@@ -29,7 +40,8 @@ let astStructBlock_to_audioBlock astStructBlock =
                           auxTranslate buffer a newState
     |WithVolume(v, a) -> let newState = {currState with currentVolume = v} in
                           (auxTranslate (buffer@[VolumeSet(v)]) a newState)@[VolumeSet(currState.currentVolume)]
-    |WithInstrument(i, a) -> let newState = {currState with currentInstrument = i} in
+    |WithInstrument(Id(id), a) -> let i = get_instrument_index_from_id instruments id in
+                                  let newState = {currState with currentInstrument = i} in
                           (auxTranslate (buffer@[InstrumentSet(i)]) a newState)@[InstrumentSet(currState.currentInstrument)]
     |Loop(a) -> (auxTranslate buffer a currState)@[GlobalReturnTrack]
     |Call(BlockId(Id(s))) -> buffer@[CallBlock(s)]
@@ -85,11 +97,11 @@ let song_list_from_ast globalAst =
   
   
 let block_list_from_ast globalAst =
-  let Ast(_, _, blocks) = globalAst in
+  let Ast(instruments, _, blocks) = globalAst in
   let rec aux currBlocks =
     match currBlocks with
     |[] -> []
-    |b::q -> (astStructBlock_to_audioBlock b)::aux q
+    |b::q -> (astStructBlock_to_audioBlock b instruments)::aux q
   in
   aux (blocks)
 

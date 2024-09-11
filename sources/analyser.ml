@@ -169,6 +169,10 @@ let analyse_block_verify_id_defined currentBlockId astNode state =
     {state with messages = {state.messages with errors = ("Block id \""^id^"\" referenced in block \""^currentBlockId^"\" is not defined")::state.messages.errors}}
   else
     state
+  |WithInstrument(Id(id), _) -> if not (S.mem id state.instrumentsIdentifiers) then
+    {state with messages = {state.messages with errors = ("Instrument id \""^id^"\" referenced in block \""^currentBlockId^"\" is not defined")::state.messages.errors}}
+  else
+    state
   |_-> state
 
 let analyse_block_verify_call_and_jump_by_ref currentBlockId astNode state =
@@ -187,10 +191,6 @@ let analyse_block_verify_range currentBlockId astNode state =
     state
   |WithVolume(vol, _) -> if vol > 15 || vol < 0 then
     {state with messages = {state.messages with errors = ("bad volume value in block \""^currentBlockId^"\" (cannot exceed 15)")::state.messages.errors}}
-  else
-    state
-  |WithInstrument(inst, _) -> if inst > 15 || inst < 0 then
-    {state with messages = {state.messages with errors = ("bad instrument index in blick \""^currentBlockId^"\" (cannot exceed 15)")::state.messages.errors}}
   else
     state
   |_-> state

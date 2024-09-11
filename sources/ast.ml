@@ -25,7 +25,7 @@ type astBlock =
 |Repeat of int * astBlock
 |Transpose of int * astBlock
 |WithVolume of int * astBlock
-|WithInstrument of int * astBlock
+|WithInstrument of identifier * astBlock
 |Loop of astBlock
 |Call of astBlock
 |Jump of astBlock
@@ -56,7 +56,7 @@ let disp_ast_block b =
         |Repeat(nb, a) -> Printf.printf "%sRepeat(%i)\n" treeBuff nb; aux_instruction_display (treeBuff^"   ") a
         |Transpose(nb, a) -> Printf.printf "%sTranspose(%i)\n" treeBuff nb; aux_instruction_display (treeBuff^"   ") a
         |WithVolume(vol, a) -> Printf.printf "%sWithVolume(%i)\n" treeBuff vol; aux_instruction_display (treeBuff^"   ") a
-        |WithInstrument(inst, a) -> Printf.printf "%sWithInstrument(%i)\n" treeBuff inst; aux_instruction_display (treeBuff^"   ") a
+        |WithInstrument(Id(inst), a) -> Printf.printf "%sWithInstrument(%s)\n" treeBuff inst; aux_instruction_display (treeBuff^"   ") a
         |Loop(a) -> Printf.printf "%sLoop\n" treeBuff; aux_instruction_display (treeBuff^"   ") a
         |Call(a) -> Printf.printf "%sCall\n" treeBuff; aux_instruction_display (treeBuff^"   ") a
         |Jump(a) -> Printf.printf "%sJump\n" treeBuff; aux_instruction_display (treeBuff^"   ") a
