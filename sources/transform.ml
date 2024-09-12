@@ -5,7 +5,7 @@ open Ast
 (*Counter struct for number of call and number of anonymous places*)
 type analyseCounter = {
   callCounter : int; (*number af call to that block*)
-  jumpCounter : int; (*number of jumpts to that block*)
+  jumpCounter : int; (*number of jumps to that block*)
   anonymousCounter : int; (*number of anonymous calls to that block*)
   blockSize : int; (*size score of that block*)
 }
@@ -65,6 +65,8 @@ let analyseBlock block globalAst =
   List.fold_left (auxCountInBlock id) baseCounter blocksList
 
 
+(* -------------------- Anonymous and call transformation functions ------------------- *)
+
 (*takes a block and a global Ast
 returns the global ast where the block has been removed and every call or anonymous call to the block
 has been replaced by its content*)
@@ -123,14 +125,52 @@ let call_transform block globalAst =
   in
   Ast(instruments, songs, update_block_list blocks)
 
+(* ------------------------------------------------------------------------- *)
 
+(* ----------------------- Recursive Repeat transformation Functions ----------- *)
 
+(*Takes a block
+Returns the list containing block + every new blocks spawned from recursive transformation*)
+let create_recursive_repeat_blocks block =
+  let Block(Id(blockId), astB) = block in
+  let resultList = ref [] in
+  let rec aux_construct_truncated_ast currAst deepness tailingLabel =
+    match currAst with
+    |Seq(a1, a2) -> Seq(aux_construct_truncated_ast a1 deepness (tailingLabel^"l"), aux_construct_truncated_ast a2 deepness tailingLabel)
+    |Transpose(i, a) -> Transpose(i, aux_construct_truncated_ast a deepness tailingLabel)
+    |WithVolume(v, a) -> WithVolume(v, aux_construct_truncated_ast a deepness tailingLabel)
+    |WithInstrument(id, a) -> WithInstrument(id, aux_construct_truncated_ast a deepness tailingLabel)
+    |Loop(a) -> Loop(aux_construct_truncated_ast a deepness tailingLabel)
+    |Call(a) -> Call(aux_construct_truncated_ast a deepness tailingLabel)
+    |Jump(a) -> Jump(aux_construct_truncated_ast a deepness tailingLabel)
+    |Repeat(i, a) -> if deepness < 1 then
+      Repeat(i, aux_construct_truncated_ast a (deepness+1) tailingLabel)
+    else
+      let newLabel = tailingLabel^(string_of_int deepness) in
+      let subAstInBlock = Repeat(i, aux_construct_truncated_ast a (deepness+1) tailingLabel) in
+      resultList := Block(Id(newLabel), subAstInBlock)::!resultList;
+      Call(BlockId(Id(newLabel)))
+    |other -> other
+  in
+  let newAstForBlock = aux_construct_truncated_ast astB 0 (blockId^"_reprec") in
+  Block(Id(blockId), newAstForBlock)::(!resultList)
+
+(* ----------------------------------------------------------------------------- *)
 
 (*---------------------------------------------------------------*)
 (*--------------------      functions       ---------------------*)
 (*---------------------------------------------------------------*)
 
-let transform_ast globalAst =
+(*Takes an ast
+analyse usage of jump, call and anonymous call of block$
+replaces or deletes calls and blocks according to the rules
+block :
+- never called or referenced : kept untotched
+- jumped to or heuristic size too large : kept untoutched
+- heuristic block size < 10 : anonymous transform -> blocked deleted and every call and reference are replaced by block content
+- called or referenced more than 4 times : call tranformed -> every reference is transformed into a call
+- called less than 3 times : anonymous transform *)
+let transform_anonymous_and_call_ast globalAst =
   let Ast(instruments, songs, blocks) = globalAst in
   let rec aux_iterate_on_blocks currentGlobalAst blocks =
     match blocks with
@@ -154,6 +194,24 @@ let transform_ast globalAst =
 
 
 
+(*Takes an ast
+transforme recursively nested repeats into calls to newly created blocks
+to avoid conflics in multiply recursive structures
+Example : X X Repeat(i) {X X Repeat(j) {X X}}
+will become : X X Repeat(i) {X X Call(a)}
+        a : Repeat(j) {X X}*)
+let transform_recursive_repeat_ast globalAst =
+  let Ast(i, s, blocks) = globalAst in
+  let aux b final = (create_recursive_repeat_blocks b)@final in
+  Ast(i, s, (List.fold_right (aux) blocks []))
+
+
+
+
+let transform_ast globalAst =
+  let ast = transform_anonymous_and_call_ast globalAst in
+  let ast = transform_recursive_repeat_ast ast in
+  ast
 
 (*---------------------------------------------------------------*)
 (*--------------------   debug functions    ---------------------*)

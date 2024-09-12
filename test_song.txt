@@ -29,6 +29,21 @@ block testingSong : [withInstrument(base1){
     }
 }]
 
+block testingNestedRepeat : [withInstrument(base1){
+    repeat(4){
+        C3 C4 C5
+        repeat(5){
+            D2 D2
+            repeat(7){
+                A5 A5 A5
+                repeat(9) {
+                    C#4 D#6
+                }
+            }
+        }
+    }
+}]
+
 block anonymousClap : [withInstrument(base3) { C3 . C4 . C2 .}]
 
 block anonymousTheme : [F#3 ... F4]
