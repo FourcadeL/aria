@@ -20,7 +20,7 @@ open Analyser
 
 (* arguments parssing *)
 let program_name = "aria"
-let program_version = "0.3"
+let program_version = "0.5"
 let usage_msg = Printf.sprintf "%s - version %s\n usage : [-verbose] -f <file1> [-o <output>]" program_name program_version
 let verbose = ref false
 let input_file = ref ""
@@ -68,9 +68,9 @@ let () =
     (*AST transformation pass*)
     (*---------- testing------------*)
     (* disp_ast parsed; *)
-    debug parsed;
+    (* debug parsed; *)
     let parsed = transform_ast parsed in
-    debug parsed;
+    (* debug parsed; *)
     (* ---------------------------- *)
 
     (* AST compilation into Audio *)
