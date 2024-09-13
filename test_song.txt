@@ -44,6 +44,8 @@ block testingNestedRepeat : [withInstrument(base1){
     }
 }]
 
+block neverUsed : [F4 .. F3 ..]
+
 block anonymousClap : [withInstrument(base3) { C3 . C4 . C2 .}]
 
 block anonymousTheme : [F#3 ... F4]

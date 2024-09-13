@@ -7,6 +7,7 @@ type analyseCounter = {
   callCounter : int; (*number af call to that block*)
   jumpCounter : int; (*number of jumps to that block*)
   anonymousCounter : int; (*number of anonymous calls to that block*)
+  songReferenceCounter : int; (*number of reference to that block in songs*)
   blockSize : int; (*size score of that block*)
 }
 
@@ -41,28 +42,38 @@ let getAstBlockSizeScore astBlock =
 
 (*Take a struct block and the global ast
 returns the counter associated to the block*)
-let analyseBlock block globalAst =
+let analyse_block block globalAst =
   let Block(Id(id), _)  = block in
-  let auxCountInBlock idToTest accCounter block =
+  let aux_count_in_block idToTest accCounter block =
     let Block(_, astB) = block in
-    let rec interAuxIterateAst idToTestInner ast counter =
+    let rec inter_aux_iterate_ast idToTestInner ast counter =
       match ast with
-      |Seq(a1, a2) -> let c1 = interAuxIterateAst id a1 counter in interAuxIterateAst id a2 c1
+      |Seq(a1, a2) -> let c1 = inter_aux_iterate_ast id a1 counter in inter_aux_iterate_ast id a2 c1
       |Call(BlockId(Id(s))) when s = idToTestInner -> {counter with callCounter = counter.callCounter + 1}
       |Jump(BlockId(Id(s))) when s = idToTestInner -> {counter with jumpCounter = counter.jumpCounter + 1}
       |BlockId(Id(s)) when s = idToTestInner -> {counter with anonymousCounter = counter.anonymousCounter + 1}
-      |Repeat(_, a) -> interAuxIterateAst idToTestInner a counter
-      |Transpose(_, a) -> interAuxIterateAst idToTestInner a counter
-      |WithVolume(_, a) -> interAuxIterateAst idToTestInner a counter
-      |WithInstrument(_, a) -> interAuxIterateAst idToTestInner a counter
-      |Loop(a) -> interAuxIterateAst idToTestInner a counter
+      |Repeat(_, a) -> inter_aux_iterate_ast idToTestInner a counter
+      |Transpose(_, a) -> inter_aux_iterate_ast idToTestInner a counter
+      |WithVolume(_, a) -> inter_aux_iterate_ast idToTestInner a counter
+      |WithInstrument(_, a) -> inter_aux_iterate_ast idToTestInner a counter
+      |Loop(a) -> inter_aux_iterate_ast idToTestInner a counter
       |_ -> counter
     in
-  interAuxIterateAst idToTest astB accCounter
+  inter_aux_iterate_ast idToTest astB accCounter
   in
-  let baseCounter = {callCounter = 0; jumpCounter = 0; anonymousCounter = 0; blockSize = getAstBlockSizeScore block} in
-  let Ast(_, _, blocksList) = globalAst in
-  List.fold_left (auxCountInBlock id) baseCounter blocksList
+  let aux_count_in_song idToTest accCounter song =
+    let Song(_, PointersSong(Id(b1), Id(b2), Id(b3), Id(b4))) = song in
+    let localCount = ref 0 in
+    if b1 = idToTest then localCount := !localCount + 1;
+    if b2 = idToTest then localCount := !localCount + 1;
+    if b3 = idToTest then localCount := !localCount + 1;
+    if b4 = idToTest then localCount := !localCount + 1;
+    {accCounter with songReferenceCounter = accCounter.songReferenceCounter + !localCount}
+  in
+  let baseCounter = {callCounter = 0; jumpCounter = 0; anonymousCounter = 0; songReferenceCounter = 0; blockSize = getAstBlockSizeScore block} in
+  let Ast(_, songList, blocksList) = globalAst in
+  let counterWithSongs = List.fold_left (aux_count_in_song id) baseCounter songList in
+  List.fold_left (aux_count_in_block id) counterWithSongs blocksList
 
 
 (* -------------------- Anonymous and call transformation functions ------------------- *)
@@ -175,7 +186,7 @@ let transform_anonymous_and_call_ast globalAst =
   let rec aux_iterate_on_blocks currentGlobalAst blocks =
     match blocks with
     |[] -> currentGlobalAst
-    |h::q -> let analyseUsage = analyseBlock h globalAst in
+    |h::q -> let analyseUsage = analyse_block h globalAst in
               if (analyseUsage.callCounter=0 && analyseUsage.anonymousCounter=0) then
                 aux_iterate_on_blocks currentGlobalAst q (*never calles, kept untoutched*)
               else
@@ -205,11 +216,30 @@ let transform_recursive_repeat_ast globalAst =
   let aux b final = (create_recursive_repeat_blocks b)@final in
   Ast(i, s, (List.fold_right (aux) blocks []))
 
+(*Takes an ast
+transforme ast to completely remove blocks that are never called,
+never referenced and never referenced in songs*)
+let transform_remove_unused_blocks globalAst = 
+  let Ast(i, s, blocks) = globalAst in
+  let rec aux_iterate_on_blocks tailingBlocks =
+    match tailingBlocks with
+    |[] -> []
+    |h::q -> let analyseUsage = analyse_block h globalAst in
+          if analyseUsage.callCounter + analyseUsage.jumpCounter + analyseUsage.anonymousCounter + analyseUsage.songReferenceCounter <= 0 then
+            let Block(Id(id), _) = h in
+            Printf.printf "Removing block \"%s\" never used\n" id;
+            aux_iterate_on_blocks q
+          else
+            h::aux_iterate_on_blocks q
+  in
+  Ast(i, s, aux_iterate_on_blocks blocks)
+
 
 
 
 let transform_ast globalAst =
   let ast = transform_anonymous_and_call_ast globalAst in
+  let ast = transform_remove_unused_blocks ast in
   let ast = transform_recursive_repeat_ast ast in
   ast
 
@@ -223,7 +253,7 @@ let debug globalAstTest =
   let rec aux bs =
     match bs with
     |h::q -> let Block(Id(id), _) = h in
-              let res = analyseBlock h globalAstTest in Printf.printf "B[%s] : nbCall=%i | nbJump=%i | nbAnonymous=%i | size=%i\n" id res.callCounter res.jumpCounter res.anonymousCounter res.blockSize; aux q
+              let res = analyse_block h globalAstTest in Printf.printf "B[%s] : nbCall=%i | nbJump=%i | nbAnonymous=%i | size=%i | nbRefsInSongs=%i\n" id res.callCounter res.jumpCounter res.anonymousCounter res.blockSize res.songReferenceCounter; aux q
     |_ -> ()
   in
   aux blocks
