@@ -28,6 +28,9 @@ BLKAST_WITHINSTRUMENT BLKAST_LOOP BLKAST_CALL BLKAST_JUMP
 
 %token <string> IDENTIFIER
 %token <int> INT
+%token <int> HEX
+%token <int> BIN
+
 // %token <Audio.note> NOTE
 
 %start start
@@ -43,12 +46,19 @@ start:
         failwith ("unexpected error")}
 
 
+/*---------------------------------------------------------------*/
+/*-----------------     integer dec/hex/bin    ------------------*/
+/*---------------------------------------------------------------*/
+integer:
+|INT {$1}
+|HEX {$1}
+|BIN {$1}
 
 /*---------------------------------------------------------------*/
 /*-----------------Unit Instruments Declaration------------------*/
 /*---------------------------------------------------------------*/
 instrument:
-|INSTRUMENT identifier COLON INT COMA INT COMA INT COMA INT SEMI_COLON volume_list SEMI_COLON {Instrument($2, RegisterInstrument($4, $6, $8, $10, $12))}
+|INSTRUMENT identifier COLON integer COMA integer COMA integer COMA integer SEMI_COLON volume_list SEMI_COLON {Instrument($2, RegisterInstrument($4, $6, $8, $10, $12))}
 
 volume_list:
 |{[]} /*nothing is read*/

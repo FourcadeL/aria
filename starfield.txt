@@ -8,13 +8,13 @@ instrument base2 :
 instrument base3 : 
 0, 16, 32, 128; 0, 0, 0, 0, 0, 0, 2;% main wave 
 instrument noise :
-0, 0, 240, 192; 0;%main noise
+0, 0, 240, 192; 1, -1, -5, -9, -15;%main noise
 
 song starfield :
 ch1 Smain1
 ch2 empty
 ch3 Smainwave
-ch4 empty
+ch4 SmainNoise
 
 song mirroredmountains :
 ch1 Gmain1
@@ -46,6 +46,12 @@ ch2 SLDL2
 ch3 SLDLW
 ch4 empty
 
+song burningHeat :
+ch1 BHG1
+ch2 empty
+ch3 BHGW
+ch4 BHGN
+
 block Smain1 : [withInstrument(0){withVolume(10){
     loop{
     repeat(4){C5 E5 G5 C6}
@@ -65,6 +71,18 @@ block Smainwave : [withInstrument(2){withVolume(2){
     call{SthemeAwave}
     call{SthemeBwave}
     }}}]
+
+block SmainNoise : [withInstrument(3){withVolume(7){
+    loop{
+        repeat(3){F#4. F#4. F#4. F#4. F#4. F#4. A#4. F#4.} F#4. F#4. F#4. F#4. F#4 F#4 F#4. F#4 A#4 F#4.
+        repeat(7){F#4. F#4. F#4. F#4. F#4 A#4 F#4. F#4 A#4 F#4.}
+        F#4. F#4. F#4. F#4. F#4 A#4 F#4. A#4 A#4 A#4 A#4
+        repeat(3){_. F#4.} F#4. F#4. repeat(2){_. F#4.} _. F#4 F#4 F#4. F#4.
+        repeat(2){_. F#4.} _. F#4 F#4 F#4 F#4 F#4. repeat(2){_. F#4.} _. F#4 F#4 F#4 F#4 F#4 F#4
+        repeat(3){_. F#4.} F#4. F#4. repeat(2){_. F#4.} _. F#4 F#4 F#4. F#4.
+        repeat(2){_. F#4.} _. F#4 F#4 F#4 F#4 F#4. repeat(2){_. F#4 F#4} _. F#4. F#4. F#4.
+    }}}
+]
 
 block SthemeA1 : [
     repeat(2){E4 .... F4 G4 C5 G5 .......
@@ -272,6 +290,42 @@ block SLDLW : [withInstrument(2){withVolume(2){
         F#2 F#2 F#3 F#2 F#3. F#2. G2 G2 G3 G2 G3. G2. A2 A2 A3 A2 A3. F3 A2 Bb2 Bb2 Bb3 Bb2 Bb3 Bb3 A3 Bb3
         B2 B2 B3 B2 B2 B2 B2 B3 C3 C3 C4 C3 C4. C3. C#3 C#3 C#4 C#3 A2 B2 C#3 A2 D3 D3 C3 C#3 D3 A2 Bb2 C3
         repeat(4){_...............}
+
+    }}}
+]
+
+
+
+block BHG1 : [withInstrument(0){withVolume(10){
+    loop{
+        F4 E4 D4 E4 C4 G3... G3 C4 G3 Ab3 C4 Ab3 Eb4.. Bb3 D4 Bb3 F4..
+        F4 E4 F4 G4..... G4 C5 G4 Ab4 Eb4 Ab4 C5.. Bb4 F4 Bb4 D5..
+        E4... E4 F4 G4. F4. E4. F4. C4. F4. A4.....
+        Ab4 G4 Ab4 Bb4.... Bb4 Eb5 Bb4 G4 Bb4 A4 Bb4 C5..... A4 C5 F5
+        D4... D4 Eb4 F4..... F4... F4 Bb4 Eb5. D5. Bb4.
+        Db5... Bb4 Gb4 Db5.. Gb4 Bb4 Db5 F5. C5. Bb4. A4. F4. C4.
+        D4... D4 Eb4 F4..... F4... F4 Bb4 Eb5. D5. Bb4.
+        Bb4... Bb4 D5 G5..... _ Db5 Db5 Db5.. _ Eb5 Eb5 Eb5..
+    }}}
+]
+
+block BHGW : [withInstrument(2){withVolume(2){
+    loop{
+        repeat(2){C3........... Ab2..... Bb2 .....}
+        Bb2........... A2........... Eb2........... F2...........
+        Bb2........... Ab2........... Gb2........... F2...........
+        Bb2........... Ab2........... G2........... _ Gb2 Gb2 Gb2.. _ Ab2 Ab2 Ab2..
+    }}}
+]
+
+block BHGN : [withInstrument(3){withVolume(7){
+    loop{
+        repeat(7){F#4 _ F#4 F#4..} F#4 F#4 F#4 F#4 F#4 F#4
+        repeat(6){F#4 _ F#4 F#4..} F#4 _ F#4 F#4 F#4 F#4 F#4 F#4 F#4 F#4 _ F#4
+        repeat(6){F#4. F#4} F#4. F#4. F#4.
+        repeat(4){F#4. F#4} F#4. F#4. F#4. F#4 F#4 F#4 F#4 F#4 F#4
+        repeat(6){F#4. F#4} F#4. F#4. F#4.
+        F#4. F#4. F#4. F#4. F#4. F#4. F#4 F#4 F#4 F#4.. F#4 F#4 F#4 F#4..
     }}}
 ]
 

@@ -12,7 +12,7 @@ rule read = parse
 | '|' {read lexbuf}
 | '\t' {read lexbuf}
 | '\n' {incr_linenum lexbuf; read lexbuf}
-| '%' {comment lexbuf}
+| "//" {comment lexbuf}
 | '(' {START_PAR}
 | ')' {END_PAR}
 | '[' {START_BRAC}
@@ -55,6 +55,10 @@ rule read = parse
 |['a'-'z''A'-'Z']['a'-'z''A'-'Z']['a'-'z''A'-'Z']['0'-'9''a'-'z''A'-'Z']* {IDENTIFIER (Lexing.lexeme lexbuf)}
 (*the quickfix for identifier and basenote confusion is that identifier are now required to be at least 3 non-alphabetic characters longs*)
 |'-'?['0'-'9']+ {INT (int_of_string (Lexing.lexeme lexbuf))}
+|'$'['0'-'9''A'-'F']+ {let size = String.length (Lexing.lexeme lexbuf) in 
+                        HEX (int_of_string ("0x"^(String.sub (Lexing.lexeme lexbuf) 1 (size-1))))}
+|'%'['0'-'1']+ {let size = String.length (Lexing.lexeme lexbuf) in
+                  BIN (int_of_string ("0b"^(String.sub (Lexing.lexeme lexbuf) 1 (size-1))))}
 
 (* read error *)
 | _ {let start_pos = Parsing.rhs_start_pos 1 in

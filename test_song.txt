@@ -1,14 +1,14 @@
-% version essai de starfield (de salamander ^^)
-% pour V0.1 du compilateur
+// version essai de starfield (de salamander ^^)
+// pour V0.1 du compilateur
 audio
-instrument base1 : 
-0, 128, 80, 128; 0, -2, 2, -3; % main square
+instrument base1 :
+0, 128, 80, 128; 0, -2, 2, -3; // main square
 instrument base2 : 
 0, 192, 241, 192; 0;
 instrument base3 : 
-0, 16, 32, 128; 0, 0, 0, 0, 0, 0, 2;% main wave 
+0, 16, 32, 128; 0, 0, 0, 0, 0, 0, 2;// main wave 
 instrument noise :
-0, 0, 240, 192; 0;%main noise
+0, 0, 240, 192; 0;//main noise
 
 song testing :
 ch1 testingSong
